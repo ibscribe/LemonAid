@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LemonAid</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafbf6;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --text-secondary: #5f6b5a;
+    --text-tertiary: #8d9688;
+    --border: #dde3d6;
+    --border-light: #eef1e9;
+    --accent: #4a6b1e;
+    --accent-hover: #3d5a17;
+    --accent-light: #e8f0da;
+    --lemon: #c8d84e;
+    --lemon-dim: #9aab2d;
+    --gold: #7a8c1e;
+    --gold-bg: #f4f7e4;
+    --gold-border: #c8d67a;
+    --tag-bg: #eef1e9;
+    --tag-text: #4a5c3e;
+    --sans: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+    --serif: var(--sans);
+  }
+
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* === NAV === */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    border-top: 3px solid var(--lemon);
+  }
+  .nav-inner {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 56px;
+  }
+  .nav-logo {
+    font-family: var(--sans); font-weight: 700; font-size: 18px;
+    color: var(--text); cursor: pointer; text-decoration: none;
+    letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo .lemon { font-size: 22px; line-height: 1; }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; color: var(--text-secondary);
+    text-decoration: none; cursor: pointer; transition: color 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .nav-cta {
+    font-size: 13px; font-weight: 700; color: var(--accent) !important;
+    background: var(--lemon); padding: 7px 16px; border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .nav-cta:hover { background: var(--lemon-dim); color: white !important; }
+  .nav-links a.active { color: var(--accent); }
+
+  /* === LAYOUT === */
+  .page { display: none; }
+  .page.active { display: block; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .section { padding: 24px 0; }
+  .section + .section { border-top: 1px solid var(--border-light); }
+
+  /* === TYPOGRAPHY === */
+  h1 {
+    font-family: var(--sans); font-weight: 300; font-size: 42px;
+    line-height: 1.15; letter-spacing: -0.5px; color: var(--text);
+  }
+  h2 {
+    font-family: var(--sans); font-weight: 500; font-size: 28px;
+    line-height: 1.25; letter-spacing: -0.3px; color: var(--text);
+  }
+  h3 {
+    font-family: var(--sans); font-weight: 600; font-size: 16px;
+    line-height: 1.4; color: var(--text);
+  }
+  .subtitle {
+    font-size: 18px; color: var(--text-secondary); line-height: 1.6;
+    max-width: 540px; margin-top: 16px;
+  }
+  .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+  }
+
+  /* === CARDS === */
+  .card-grid { display: grid; gap: 20px; margin-top: 32px; }
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px; cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .card:hover {
+    border-color: var(--lemon-dim);
+    box-shadow: 0 2px 16px rgba(74,107,30,0.06);
+  }
+  .card h3 { margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
+  .card .meta {
+    font-size: 12px; color: var(--text-tertiary); margin-top: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card .meta::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--lemon); flex-shrink: 0;
+  }
+
+  .card-paid {
+    border-color: var(--gold-border);
+    background: var(--gold-bg);
+  }
+  .card-paid:hover { border-color: var(--lemon-dim); }
+
+  /* === TAGS === */
+  .tag {
+    display: inline-block; padding: 4px 12px; border-radius: 100px;
+    font-size: 12px; font-weight: 500; background: var(--tag-bg);
+    color: var(--tag-text); margin: 3px 4px 3px 0; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .tag:hover { background: var(--accent-light); }
+  /* === BADGE === */
+  .badge-paid {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .badge-paid::before {
+    content: ''; display: inline-block; width: 6px; height: 6px;
+    background: var(--lemon-dim); border-radius: 50%;
+  }
+
+  /* === POST LIST === */
+  .post-list { margin-top: 8px; }
+  .post-item {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid var(--border-light);
+    cursor: pointer; transition: opacity 0.15s; text-decoration: none;
+  }
+  .post-item:hover { opacity: 0.7; }
+  .post-body { display: flex; align-items: baseline; gap: 10px; }
+  .post-icon { font-size: 13px; flex-shrink: 0; width: 18px; text-align: center; color: var(--text-tertiary); }
+  .post-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .post-summary { font-size: 13px; color: var(--text-tertiary); line-height: 1.4; }
+  @media (max-width: 768px) { .post-item { grid-template-columns: 1fr; } .post-summary { display: none; } }
+
+  /* === POST GROUPS (grouped archive view) === */
+  .post-group { margin-top: 40px; }
+  .post-group:first-child { margin-top: 24px; }
+  .post-group-header {
+    display: flex; align-items: baseline; gap: 10px;
+    padding-bottom: 10px; border-bottom: 2px solid var(--border);
+    margin-bottom: 0;
+  }
+  .post-group-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-secondary);
+  }
+  .post-group-count {
+    font-size: 12px; color: var(--text-tertiary);
+  }
+
+  /* === HERO === */
+  .hero { padding: 48px 0 36px; }
+  .hero h1 { max-width: 600px; }
+  .hero-home h1 { max-width: none; white-space: nowrap; }
+  .hero-home .subtitle { max-width: none; white-space: nowrap; }
+  .hero .subtitle { max-width: 480px; }
+  .hero-home { background: linear-gradient(180deg, var(--accent-light) 0%, var(--bg) 100%); padding-top: 40px; margin-top: -1px; }
+  .hero-home h1 .highlight {
+    background: linear-gradient(104deg, transparent 0%, rgba(200,216,78,0.5) 3%, rgba(200,216,78,0.35) 96%, transparent 99%);
+    padding: 2px 6px;
+    border-radius: 1px;
+  }
+
+  /* === BUTTONS === */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; font-weight: 600; padding: 10px 20px;
+    border-radius: 8px; cursor: pointer; border: none;
+    transition: all 0.15s; text-decoration: none;
+  }
+  .btn-primary { background: var(--lemon); color: var(--accent); font-weight: 700; }
+  .btn-primary:hover { background: var(--lemon-dim); color: white; }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--lemon-dim); background: var(--accent-light); }
+  .btn-row { display: flex; gap: 12px; margin-top: 28px; }
+
+  /* === LEMONAID === */
+  .lemonaid-box {
+    background: var(--gold-bg); border: 1px solid var(--gold-border);
+    border-radius: 12px; padding: 40px; text-align: center;
+    margin-top: 32px;
+  }
+  .lemonaid-input {
+    width: 100%; max-width: 480px; padding: 12px 16px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 15px; font-family: var(--sans);
+    margin-top: 20px; outline: none; transition: border-color 0.15s;
+  }
+  .lemonaid-input:focus { border-color: var(--lemon-dim); box-shadow: 0 0 0 3px rgba(200,216,78,0.15); }
+  .lemonaid-results { margin-top: 24px; text-align: left; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .lemonaid-match {
+    display: block; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 10px; transition: border-color 0.15s, background 0.15s;
+    text-decoration: none;
+  }
+  .lemonaid-match:hover { border-color: var(--lemon-dim); background: var(--accent-light); }
+  .lemonaid-match-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+  .lemonaid-match-icon { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; }
+  .lemonaid-match h3 { font-size: 14px; font-weight: 600; color: var(--text); margin: 0; }
+  .lemonaid-match p { font-size: 13px; color: var(--text-secondary); line-height: 1.45; margin: 0; padding-left: 20px; }
+  .lemonaid-empty { font-size: 14px; color: var(--text-tertiary); text-align: center; padding: 16px 0; }
+
+  /* === VISUALS GALLERY === */
+  .visual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 32px; }
+  .visual-card {
+    aspect-ratio: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px;
+    cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+    text-align: center;
+  }
+  .visual-card:hover { border-color: var(--lemon-dim); box-shadow: 0 2px 16px rgba(74,107,30,0.06); }
+  .visual-icon {
+    font-size: 32px; margin-bottom: 16px;
+    width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+    background: var(--lemon); border-radius: 12px;
+  }
+  .visual-card h3 { font-size: 14px; }
+  .visual-card p { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+
+  /* === MEMBERSHIP === */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px;
+  }
+  @media (max-width: 900px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .pricing-card {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 28px 24px;
+    position: relative; display: flex; flex-direction: column;
+  }
+  .pricing-card.featured {
+    border: 2px solid var(--accent);
+  }
+  .pricing-card.featured::before {
+    content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 12px; border-radius: 20px;
+  }
+  .pricing-card h3 { font-size: 17px; font-weight: 700; margin: 0 0 6px; }
+  .price { font-family: var(--serif); font-size: 36px; font-weight: 600; line-height: 1; margin: 12px 0 4px; }
+  .price span { font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .price-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 18px; }
+  .benefit-list { list-style: none; margin: 0; padding: 0; flex: 1; }
+  .benefit-list li {
+    padding: 7px 0; font-size: 13px; color: var(--text-secondary); line-height: 1.45;
+    display: flex; align-items: flex-start; gap: 8px;
+    border-top: 1px solid var(--border-light);
+  }
+  .benefit-list li .chk { flex-shrink: 0; margin-top: 1px; font-size: 13px; }
+  .benefit-list li .chk.yes { color: var(--lemon-dim); }
+  .benefit-list li .chk.no { color: var(--text-tertiary); }
+  .benefit-list li.unavailable { color: var(--text-tertiary); text-decoration: line-through; }
+
+  /* === SERIES DETAIL === */
+  .series-header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .reading-order { counter-reset: step; margin-top: 24px; }
+  .reading-step {
+    display: flex; gap: 20px; padding: 20px 0;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .reading-step:hover { opacity: 0.7; }
+  .reading-step::before {
+    counter-increment: step; content: counter(step);
+    font-family: var(--serif); font-size: 24px; font-weight: 600;
+    color: var(--lemon-dim); min-width: 32px;
+  }
+  .reading-step h3 { font-size: 15px; margin-bottom: 4px; }
+  .reading-step p { font-size: 13px; color: var(--text-secondary); }
+
+  /* === GUIDE DETAIL === */
+  .tenet-list { margin-top: 32px; }
+  .tenet {
+    display: flex; gap: 24px; padding: 28px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .tenet-num {
+    font-family: var(--serif); font-size: 32px; font-weight: 600;
+    color: var(--lemon-dim); min-width: 40px;
+  }
+  .tenet-content { flex: 1; }
+  .tenet-content h3 { font-size: 17px; margin-bottom: 8px; }
+  .tenet-content p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+  .tenet-cta {
+    margin-top: 12px; font-size: 13px; font-weight: 600;
+    color: var(--accent); cursor: pointer;
+  }
+
+  /* === FOOTER === */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0; margin-top: 64px;
+  }
+  .footer-inner {
+    max-width: 1080px; margin: 0 auto; padding: 0 24px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-inner span { font-size: 13px; color: var(--text-tertiary); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    font-size: 13px; color: var(--text-tertiary); text-decoration: none;
+    cursor: pointer;
+  }
+  .footer-links a:hover { color: var(--text-secondary); }
+
+  /* === BACK LINK === */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-secondary); cursor: pointer;
+    margin-bottom: 24px; text-decoration: none;
+  }
+  .back-link:hover { color: var(--text); }
+
+  /* === TOPIC PAGE === */
+  .topic-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .topic-pill {
+    padding: 8px 18px; border: 1px solid var(--border); border-radius: 100px;
+    font-size: 13px; font-weight: 500; cursor: pointer; background: var(--surface);
+    transition: all 0.15s;
+  }
+  .topic-pill:hover { background: var(--accent-light); border-color: var(--lemon-dim); color: var(--accent); }
+  .topic-pill.active {
+    background: var(--lemon); color: var(--accent); border-color: var(--lemon);
+    font-weight: 600;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .card-grid.cols-2, .card-grid.cols-3, .visual-grid {
+      grid-template-columns: 1fr;
+    }
+    h1 { font-size: 32px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" onclick="go('home')"><span class="lemon">🍋</span> LemonAid</a>
+    <div class="nav-links">
+      <a onclick="go('newsletter')" id="nav-newsletter">Library</a>
+      <a onclick="go('concepts')" id="nav-concepts">Concepts</a>
+      <a onclick="go('series')" id="nav-series">Series</a>
+      <a onclick="go('guides')" id="nav-guides">Guides</a>
+      <a onclick="go('skills')" id="nav-skills">Skills</a>
+      <a onclick="go('principles')" id="nav-principles">Principles</a>
+      <a onclick="go('about')" id="nav-about">About</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================== HOME ============================== -->
+<div id="page-home" class="page active">
+  <div class="container">
+
+    <!-- Hero -->
+    <div class="hero hero-home">
+      <h1>A knowledge base for <span class="highlight">B2B product leaders</span></h1>
+      <p class="subtitle">
+        200+ posts on strategy, growth, metrics, and leadership built up over years of building, shipping, and repeating
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-primary" onclick="go('newsletter')">Explore</a>
+      </div>
+    </div>
+
+    <!-- LemonAid CTA -->
+    <div class="section">
+      <div class="lemonaid-box">
+        <h2 style="margin-top:8px;">What's keeping you up at night?</h2>
+        <p style="color:var(--text-secondary);font-size:15px;margin-top:8px;">describe what you're dealing with and get matched to the right reading</p>
+        <input class="lemonaid-input" placeholder="e.g. My team ships a lot but nothing moves the metric..." id="lemonaid-input" oninput="searchLemonaid()" />
+        <div class="lemonaid-results" id="lemonaid-results"></div>
+      </div>
+    </div>
+
+    <!-- Featured Series -->
+    <div class="section">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div>
+          <p class="label">Featured Series</p>
+          <h2 style="margin-top:8px;">Go deep on what matters</h2>
+        </div>
+        <a style="font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;" onclick="go('series')">View all →</a>
+      </div>
+      <div class="card-grid cols-3">
+        <div class="card" onclick="go('series-manufacturing-champions')">
+          <h3>Manufacturing Champions</h3>
+          <p>The shared north star of every B2B product — bridging the gap between R&D and GTM.</p>
+          <div class="meta">2 parts · Dec 2024</div>
+        </div>
+        <div class="card" onclick="go('series-career-asymptotes')">
+          <h3>Invisible Career Asymptotes</h3>
+          <p>The hidden forces that cap your growth — and strategies for breaking through.</p>
+          <div class="meta">2 parts · Oct 2024</div>
+        </div>
+        <div class="card" onclick="go('series-writing-is')">
+          <h3>Writing is...</h3>
+          <p>A 7-part exploration of writing as thinking, building, iterating, and reflecting.</p>
+          <div class="meta">7 parts · 2020–2025</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Concepts Strip -->
+    <div class="section">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div>
+          <p class="label">Concepts</p>
+          <h2 style="margin-top:8px;">Frameworks, visualized</h2>
+        </div>
+        <a style="font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;" onclick="go('concepts')">View all →</a>
+      </div>
+      <div class="card-grid cols-3" style="margin-top:24px;">
+        <div class="card" onclick="go('concept-south-star')" style="cursor:pointer;">
+          <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+            <img src="https://substackcdn.com/image/fetch/$s_!fZZQ!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F65828f68-5e9b-4390-88d3-d34004ba94ce_1876x1322.png" alt="South Star Metrics" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+          </div>
+          <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Metrics & OKRs')">Metrics & OKRs</span>
+          <h3 style="margin-top:8px;">South Star Metrics</h3>
+          <p>The 7 anti-pattern metrics that look like north stars but send teams in the wrong direction.</p>
+          <div class="meta">Click to expand</div>
+        </div>
+        <div class="card" onclick="go('concept-career-asymptotes')" style="cursor:pointer;">
+          <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+            <img src="https://substackcdn.com/image/fetch/$s_!JIea!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdac2df6c-39b7-439e-939e-09bd6299531d_4068x3933.jpeg" alt="Career Asymptotes" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+          </div>
+          <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('PM Career & Growth')">PM Career & Growth</span>
+          <h3 style="margin-top:8px;">Career Asymptotes</h3>
+          <p>The invisible forces that cap your growth as a PM — and what it actually takes to break through the ceiling.</p>
+          <div class="meta">Click to expand</div>
+        </div>
+        <div class="card" onclick="go('concept-customer-centricity')" style="cursor:pointer;">
+          <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+            <img src="https://substackcdn.com/image/fetch/$s_!Fi3-!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fac77231e-64f8-4321-9ddf-6531d903539e_1024x1022.jpeg" alt="Customer Centricity" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+          </div>
+          <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('B2B Strategy')">B2B Strategy</span>
+          <h3 style="margin-top:8px;">Customer Centricity</h3>
+          <p>Being customer-centric is more than doing interviews — a multi-layered framework for what it actually looks like in practice.</p>
+          <div class="meta">Click to expand</div>
+        </div>
+      </div>
+    </div>
+        <div class="card" style="cursor:pointer;" onclick="window.open('https://runthebusiness.substack.com/p/emotional-churn', '_blank')">
+          <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+            <img src="https://substackcdn.com/image/fetch/$s_!M5IO!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7aada5ca-6520-49bf-9462-e4d8a7be2e58_1442x1081.png" alt="Emotional Churn" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+          </div>
+          <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Leadership & Teams')">Leadership & Teams</span>
+          <h3 style="margin-top:8px;">Emotional Churn</h3>
+          <p>How emotional volatility in product teams erodes retention and compounds attrition — and what leaders can do about it.</p>
+          <div class="meta">Read on Substack</div>
+        </div>
+
+  </div>
+</div>
+
+<!-- ============================== EXPLORE ============================== -->
+<div id="page-newsletter" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Newsletter</p>
+      <h1 style="font-size:32px;">The archive</h1>
+      <p class="subtitle" style="font-size:16px;">200+ essays on building, shipping, and leading B2B products. Browse by topic.</p>
+    </div>
+
+    <div class="topic-pills" id="topic-pills">
+      <span class="topic-pill active" onclick="filterTopic('all', this)">All</span>
+      <span class="topic-pill" onclick="filterTopic('b2b-strategy', this)">B2B Strategy</span>
+      <span class="topic-pill" onclick="filterTopic('product-dev', this)">Product Development</span>
+      <span class="topic-pill" onclick="filterTopic('leadership', this)">Leadership & Teams</span>
+      <span class="topic-pill" onclick="filterTopic('career', this)">PM Career & Growth</span>
+      <span class="topic-pill" onclick="filterTopic('metrics', this)">Metrics & OKRs</span>
+      <span class="topic-pill" onclick="filterTopic('ai', this)">AI & Automation</span>
+      <span class="topic-pill" onclick="filterTopic('pricing', this)">Pricing & Revenue</span>
+      <span class="topic-pill" onclick="filterTopic('platform', this)">Platform</span>
+      <span class="topic-pill" onclick="filterTopic('writing', this)">Writing</span>
+    </div>
+
+    <div class="post-list" id="explore-posts"></div>
+  </div>
+</div>
+
+<!-- ============================== SERIES ============================== -->
+<div id="page-series" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Series & Frameworks</p>
+      <h1 style="font-size:32px;">Curated deep dives</h1>
+      <p class="subtitle" style="font-size:16px;">Multi-part explorations and guided reading paths through the archive.</p>
+    </div>
+
+    <p class="label" style="margin-top:8px;">Reading Paths</p>
+    <p style="font-size:14px;color:var(--text-secondary);margin-top:4px;">5-post curated journeys for where you are right now.</p>
+    <div class="card-grid cols-2" style="margin-top:16px;">
+      <div class="card" onclick="go('path-new-pm')">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('5 posts')">5 posts</span>
+        <h3 style="margin-top:12px;">New to Product Management</h3>
+        <p>Build your foundation with the essential reads — from product sense to career ladder to the traps to avoid.</p>
+      </div>
+      <div class="card" onclick="go('path-b2b-leader')">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('5 posts')">5 posts</span>
+        <h3 style="margin-top:12px;">B2B Product Leader</h3>
+        <p>Frameworks for leading product in enterprise — aligning R&D and GTM, connecting work to revenue, and platform strategy.</p>
+      </div>
+      <div class="card" onclick="go('path-strategy')">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('5 posts')">5 posts</span>
+        <h3 style="margin-top:12px;">Sharpening Your Strategy</h3>
+        <p>Think more clearly about where to play and how to win — from eigenquestions to bet boldness to innovation types.</p>
+      </div>
+      <div class="card" onclick="go('path-metrics')">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('5 posts')">5 posts</span>
+        <h3 style="margin-top:12px;">Getting Metrics Right</h3>
+        <p>Measure what matters and avoid what misleads — the south star taxonomy, platform myths, and the metric ladder.</p>
+      </div>
+    </div>
+
+    <p class="label" style="margin-top:48px;">Deep Dives</p>
+    <div class="card-grid cols-2" style="margin-top:16px;">
+      <div class="card" onclick="go('series-manufacturing-champions')">
+        <h3>Manufacturing Champions</h3>
+        <p>The shared, latent north star of every B2B product — and the challenge of conceptual inertia between R&D and GTM.</p>
+        <div class="meta">2 parts · Dec 2024</div>
+      </div>
+      <div class="card" onclick="go('series-career-asymptotes')">
+        <h3>Invisible Career Asymptotes</h3>
+        <p>The hidden forces that cap your growth as a PM, and what it takes to break through the invisible ceiling.</p>
+        <div class="meta">2 parts · Oct 2024</div>
+      </div>
+      <div class="card" onclick="go('series-customer-centricity')">
+        <h3>Layers of Customer Centricity</h3>
+        <p>Being customer-centric is more than doing interviews — it's a multi-dimensional discipline that evolves.</p>
+        <div class="meta">3 versions · 2022–2023</div>
+      </div>
+      <div class="card" onclick="go('series-writing-is')">
+        <h3>Writing is...</h3>
+        <p>A long-running meditation on writing as thinking, creating, connecting, compounding, building, iterating, manifesting, and reflecting.</p>
+        <div class="meta">8 parts · 2020–2025</div>
+      </div>
+      <div class="card" onclick="go('series-platform')">
+        <h3>Platform Product Management</h3>
+        <p>When to platform-ify, how to think about bundling vs. integrating, and the metrics myths that trip platform teams up.</p>
+        <div class="meta">3 posts · 2024–2025</div>
+      </div>
+      <div class="card" onclick="go('series-enterprise-saas')">
+        <h3>Enterprise SaaS Truisms</h3>
+        <p>Core beliefs about enterprise SaaS — original and revisited after AI broke some of them.</p>
+        <div class="meta">2 posts · 2021 & 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SERIES DETAIL: Manufacturing Champions ============================== -->
+<div id="page-series-manufacturing-champions" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <p class="label">Series · 2 Parts</p>
+      <h1 style="font-size:32px;margin-top:8px;">Manufacturing Champions</h1>
+      <p class="subtitle" style="font-size:16px;">The shared, latent north star of every B2B product — and the challenge of overcoming conceptual inertia between R&D and GTM.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step">
+        <div>
+          <h3>Manufacturing Champions (Part 1)</h3>
+          <p>The shared, latent north star of every B2B product. Why R&D and GTM are solving the same problem from different angles.</p>
+          <div class="meta" style="margin-top:6px;">Dec 11, 2024</div>
+        </div>
+      </div>
+      <div class="reading-step">
+        <div>
+          <h3>Manufacturing Champions (Part 2)</h3>
+          <p>The challenge of conceptual inertia — and how to break through the organizational gravity that keeps R&D and GTM apart.</p>
+          <div class="meta" style="margin-top:6px;">Dec 18, 2024</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;">
+      <p class="label">Related</p>
+      <div class="post-list">
+        <div class="post-item"><span class="post-title">FTUX in B2B</span><span class="post-date">Mar 2025</span></div>
+        <div class="post-item"><span class="post-title">Teaching Users Your Product</span><span class="post-date">Mar 2023</span></div>
+        <div class="post-item"><span class="post-title">From Daily Decisions to Bottom Line</span><span class="post-date">Jun 2024</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SERIES DETAIL: Career Asymptotes ============================== -->
+<div id="page-series-career-asymptotes" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <p class="label">Series · 2 Parts</p>
+      <h1 style="font-size:32px;margin-top:8px;">Invisible Career Asymptotes</h1>
+      <p class="subtitle" style="font-size:16px;">The hidden forces that cap your growth — and strategies for breaking through the invisible ceiling.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step">
+        <div>
+          <h3>Invisible Career Asymptotes (Part 1)</h3>
+          <p>Identifying the hidden forces that cap your growth as a PM — the asymptotes you can't see but can feel.</p>
+          <div class="meta" style="margin-top:6px;">Oct 6, 2024</div>
+        </div>
+      </div>
+      <div class="reading-step">
+        <div>
+          <h3>Invisible Career Asymptotes (Part 2)</h3>
+          <p>Strategies for breaking through the invisible ceiling — what to change and what to let go of.</p>
+          <div class="meta" style="margin-top:6px;">Oct 19, 2024</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;">
+      <p class="label">Related</p>
+      <div class="post-list">
+        <div class="post-item"><span class="post-title">The PM Career Ladder: Your Unofficial Guide</span><span class="post-date">May 2023</span></div>
+        <div class="post-item"><span class="post-title">Your IC Prime</span><span class="post-date">Sep 2021</span></div>
+        <div class="post-item"><span class="post-title">The PM Mindset Ladder</span><span class="post-date">Apr 2021</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SERIES DETAIL: Writing is... ============================== -->
+<div id="page-series-writing-is" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <p class="label">Series · 8 Parts</p>
+      <h1 style="font-size:32px;margin-top:8px;">Writing is...</h1>
+      <p class="subtitle" style="font-size:16px;">A long-running meditation on the many dimensions of writing — each essay explores writing through a different lens.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>Writing is Thinking</h3><p>The foundational act — writing as the mechanism for clarifying thought.</p><div class="meta" style="margin-top:6px;">Apr 2020</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Creating</h3><p>Writing as a generative act that brings new ideas into existence.</p><div class="meta" style="margin-top:6px;">Jul 2020</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Connecting</h3><p>How writing builds bridges between people and ideas.</p><div class="meta" style="margin-top:6px;">Jan 2021</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Compounding</h3><p>The long-term returns of consistent written output.</p><div class="meta" style="margin-top:6px;">Aug 2021</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Building</h3><p>The structural dimension — writing as construction.</p><div class="meta" style="margin-top:6px;">Oct 2022</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Iterating</h3><p>Why the first draft is never the point.</p><div class="meta" style="margin-top:6px;">Mar 2022</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Manifesting</h3><p>Writing as the act of making the abstract concrete.</p><div class="meta" style="margin-top:6px;">Mar 2022</div></div></div>
+      <div class="reading-step"><div><h3>Writing is Reflecting</h3><p>The mirror dimension — writing as a tool for self-examination.</p><div class="meta" style="margin-top:6px;">Mar 2025</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SERIES DETAIL: Customer Centricity ============================== -->
+<div id="page-series-customer-centricity" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <p class="label">Series · 3 Versions</p>
+      <h1 style="font-size:32px;margin-top:8px;">The Layers of Customer Centricity</h1>
+      <p class="subtitle" style="font-size:16px;">A framework that has evolved through three iterations — each version deepening the understanding of what it really means to be customer-centric.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>The Layers of Customer Centricity (v1)</h3><p>The initial framework — moving beyond "talk to customers" to a multi-layered discipline.</p><div class="meta" style="margin-top:6px;">2022</div></div></div>
+      <div class="reading-step"><div><h3>The Layers of Customer Centricity (v2)</h3><p>Refined with real-world application and reader feedback.</p><div class="meta" style="margin-top:6px;">Jun 2023</div></div></div>
+      <div class="reading-step"><div><h3>The Layers of Customer Centricity (v3)</h3><p>The most complete version — informed by coaching dozens of product leaders.</p><div class="meta" style="margin-top:6px;">Sep 2023</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SERIES DETAIL: Platform ============================== -->
+<div id="page-series-platform" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <p class="label">Series · 3 Posts</p>
+      <h1 style="font-size:32px;margin-top:8px;">Platform Product Management</h1>
+      <p class="subtitle" style="font-size:16px;">When and why to platform-ify, the difference between bundling and integrating, and the metrics myths that trap platform teams.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>Why Platform-ify?</h3><p>The difference between bundling vs integrating — and when platforming is the right move.</p><div class="meta" style="margin-top:6px;">Sep 2024</div></div></div>
+      <div class="reading-step"><div><h3>Demystifying Platform Product Management</h3><p>What platform PM actually means versus what people think it means.</p><div class="meta" style="margin-top:6px;">Apr 2025</div></div></div>
+      <div class="reading-step"><div><h3>Platform Products & Metrics Myths</h3><p>The specific ways platform metrics go wrong — and how to course-correct.</p><div class="meta" style="margin-top:6px;">Sep 2025</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SERIES DETAIL: Enterprise SaaS ============================== -->
+<div id="page-series-enterprise-saas" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <p class="label">Series · 2 Posts</p>
+      <h1 style="font-size:32px;margin-top:8px;">Enterprise SaaS Truisms</h1>
+      <p class="subtitle" style="font-size:16px;">The core beliefs that guided a generation of enterprise SaaS builders — and which ones AI broke.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>Enterprise SaaS Truisms</h3><p>The foundational beliefs and operating principles of building enterprise SaaS products.</p><div class="meta" style="margin-top:6px;">Jul 2021</div></div></div>
+      <div class="reading-step"><div><h3>Enterprise SaaS Truisms, Revisited</h3><p>Which beliefs held up, which cracked, and which AI shattered entirely.</p><div class="meta" style="margin-top:6px;">Mar 2026</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== READING PATH: New PM ============================== -->
+<div id="page-path-new-pm" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <span class="tag" style="margin-bottom:12px;">Reading Path · 5 Posts</span>
+      <h1 style="font-size:32px;margin-top:8px;">New to Product Management</h1>
+      <p class="subtitle" style="font-size:16px;">Build your foundation with these essential reads.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>Product Sense</h3><p>Start here — the intuition behind every good product decision.</p></div></div>
+      <div class="reading-step"><div><h3>The tl;dr of the PM Role</h3><p>What the job actually is (and isn't).</p></div></div>
+      <div class="reading-step"><div><h3>The PM Career Ladder</h3><p>Know what's expected at every level.</p></div></div>
+      <div class="reading-step"><div><h3>Falling into a Feature Factory</h3><p>The trap to avoid early in your career.</p></div></div>
+      <div class="reading-step"><div><h3>Writing is Thinking</h3><p>The skill that separates good PMs from great ones.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== READING PATH: B2B Leader ============================== -->
+<div id="page-path-b2b-leader" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <span class="tag" style="margin-bottom:12px;">Reading Path · 5 Posts</span>
+      <h1 style="font-size:32px;margin-top:8px;">B2B Product Leader</h1>
+      <p class="subtitle" style="font-size:16px;">Frameworks for leading product in enterprise & B2B.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>Manufacturing Champions (Part 1)</h3><p>The north star that aligns R&D and GTM.</p></div></div>
+      <div class="reading-step"><div><h3>The Unimpactful PM</h3><p>Diagnosing why your team's work isn't landing.</p></div></div>
+      <div class="reading-step"><div><h3>Demystifying Platform Product Management</h3><p>Platform strategy for B2B — when and how.</p></div></div>
+      <div class="reading-step"><div><h3>From Daily Decisions to Bottom Line</h3><p>Connecting product work to revenue.</p></div></div>
+      <div class="reading-step"><div><h3>AI as an Unlock for B2B Pricing</h3><p>Where AI changes the pricing game.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== READING PATH: Strategy ============================== -->
+<div id="page-path-strategy" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <span class="tag" style="margin-bottom:12px;">Reading Path · 5 Posts</span>
+      <h1 style="font-size:32px;margin-top:8px;">Sharpening Your Strategy</h1>
+      <p class="subtitle" style="font-size:16px;">Think more clearly about where to play and how to win.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>Strategy Spirals</h3><p>Strategy isn't a doc — it's an iterative process.</p></div></div>
+      <div class="reading-step"><div><h3>Eigenquestions as Answers</h3><p>Find the one question that unlocks everything else.</p></div></div>
+      <div class="reading-step"><div><h3>Bet Boldness</h3><p>How bold should your product bets be?</p></div></div>
+      <div class="reading-step"><div><h3>Accidentally Narrowing Your Market</h3><p>The subtle strategic mistake of self-limiting.</p></div></div>
+      <div class="reading-step"><div><h3>Types of Product Innovation</h3><p>Know which kind of innovation you're actually pursuing.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== READING PATH: Metrics ============================== -->
+<div id="page-path-metrics" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('series')">← Back to Series</a>
+      <span class="tag" style="margin-bottom:12px;">Reading Path · 5 Posts</span>
+      <h1 style="font-size:32px;margin-top:8px;">Getting Metrics Right</h1>
+      <p class="subtitle" style="font-size:16px;">Measure what matters — and avoid what misleads.</p>
+    </div>
+    <div class="reading-order">
+      <div class="reading-step"><div><h3>South Star Metrics</h3><p>The comprehensive anti-pattern guide — 7 types of metrics gone wrong.</p></div></div>
+      <div class="reading-step"><div><h3>Platform Products & Metrics Myths</h3><p>Platform-specific metrics traps.</p></div></div>
+      <div class="reading-step"><div><h3>Connecting B2B Products to Revenue</h3><p>Building the metric ladder from work to KPIs.</p></div></div>
+      <div class="reading-step"><div><h3>Manufacturing Currency</h3><p>Measuring value when it's hard to quantify.</p></div></div>
+      <div class="reading-step"><div><h3>From Daily Decisions to Bottom Line</h3><p>The operational side of metrics that work.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== GUIDES ============================== -->
+<div id="page-guides" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Guides</p>
+      <h1 style="font-size:32px;">Long-form, structured learning</h1>
+      <p class="subtitle" style="font-size:16px;">Comprehensive guides that go deeper than a single essay — with free teasers for each section.</p>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">Scaling B2B Products</h3>
+        <p>Learn when, why, and how to scale your B2B product line as a PM or GTM leader.</p>
+        <div class="meta">in development</div>
+      </div>
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">PM 101</h3>
+        <p>The foundational series for new and aspiring PMs — covering the core skills, mindsets, and habits that separate good PMs from great ones.</p>
+        <div class="meta">in development</div>
+      </div>
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">Product Exec Job Search Guide</h3>
+        <p>A principle-driven approach to the product management job search — from positioning yourself to closing the offer.</p>
+        <div class="meta">in development</div>
+      </div>
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">B2B Head of Product Playbook</h3>
+        <p>Everything I've learned about building B2B products at scale — from strategy to execution to GTM.</p>
+        <div class="meta">in development</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== CONCEPTS ============================== -->
+<div id="page-concepts" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Concepts</p>
+      <h1 style="font-size:32px;">Frameworks, visualized</h1>
+      <p class="subtitle" style="font-size:16px;">Mental models and frameworks from Run the Business — brought to life as visual maps via Miro and Napkin.</p>
+    </div>
+
+    <div class="card-grid cols-3">
+
+      <!-- Revenue KPIs / Metrics Ladder -->
+      <div class="card" onclick="go('concept-revenue-kpis')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!TIF4!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9477e07c-41d9-471e-aec8-643ec0026d66_12010x4079.jpeg" alt="Revenue KPIs / Metrics Ladder" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Metrics & OKRs')">Metrics & OKRs</span>
+        <h3 style="margin-top:8px;">Revenue KPIs / Metrics Ladder</h3>
+        <p>Connecting daily product work to business KPIs — the ladder from decisions to revenue to board-level metrics.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Product Market Flex -->
+      <div class="card" onclick="go('concept-product-market-flex')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!NECQ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F38c30a13-f353-48d7-bb31-5d7fcaaf0965_7124x6877.jpeg" alt="Product Market Flex" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('B2B Strategy')">B2B Strategy</span>
+        <h3 style="margin-top:8px;">Product Market Flex</h3>
+        <p>How B2B products need to flex with the market — the modes of adaptation between PMF and scale.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Strategy Coherence -->
+      <div class="card" onclick="go('concept-strategy-coherence')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!JCer!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd6bd7357-3c4b-4195-b2c1-9b683aac38ef_7153x6849.jpeg" alt="Strategy Coherence" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('B2B Strategy')">B2B Strategy</span>
+        <h3 style="margin-top:8px;">Strategy Coherence</h3>
+        <p>The 4 dimensions of staying synced on strategy — why alignment breaks down and how to rebuild it.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- South Star Metrics -->
+      <div class="card" onclick="go('concept-south-star')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!fZZQ!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F65828f68-5e9b-4390-88d3-d34004ba94ce_1876x1322.png" alt="South Star Metrics" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Metrics & OKRs')">Metrics & OKRs</span>
+        <h3 style="margin-top:8px;">South Star Metrics</h3>
+        <p>The 7 anti-pattern metrics that look like north stars but send teams in the wrong direction.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- TCO in B2B -->
+      <div class="card" onclick="go('concept-tco')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!VtmI!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F333808f8-66ac-48ae-a4f7-722084322a64_3280x2416.png" alt="TCO in B2B" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Pricing & Revenue')">Pricing & Revenue</span>
+        <h3 style="margin-top:8px;">TCO in B2B</h3>
+        <p>How AI agents are reshaping total cost of ownership calculations — and what that means for B2B pricing and positioning.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+
+      <!-- Emotional Churn -->
+      <div class="card" style="cursor:pointer;" onclick="window.open('https://runthebusiness.substack.com/p/emotional-churn', '_blank')">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!M5IO!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7aada5ca-6520-49bf-9462-e4d8a7be2e58_1442x1081.png" alt="Emotional Churn" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Leadership & Teams')">Leadership & Teams</span>
+        <h3 style="margin-top:8px;">Emotional Churn</h3>
+        <p>How emotional volatility in product teams erodes retention and compounds attrition — and what leaders can do about it.</p>
+        <div class="meta">Read on Substack</div>
+      </div>
+      <!-- Career Asymptotes -->
+      <div class="card" onclick="go('concept-career-asymptotes')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!JIea!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdac2df6c-39b7-439e-939e-09bd6299531d_4068x3933.jpeg" alt="Career Asymptotes" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('PM Career & Growth')">PM Career & Growth</span>
+        <h3 style="margin-top:8px;">Career Asymptotes</h3>
+        <p>The invisible forces that cap your growth as a PM — and what it actually takes to break through the ceiling.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Promo Playbook -->
+      <div class="card" onclick="go('concept-promo-playbook')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!3KuJ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb2b972f9-2cc9-4f2a-8b58-114bb48abefe_10409x4707.jpeg" alt="Promo Playbook" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('PM Career & Growth')">PM Career & Growth</span>
+        <h3 style="margin-top:8px;">Promo Playbook</h3>
+        <p>The framework for navigating promotions — what it actually takes to level up and how to make the case.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Mindset Ladder -->
+      <div class="card" onclick="go('concept-mindset-ladder')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!ezsZ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5308b377-7076-4968-b201-8aceb58c9773_7728x6340.jpeg" alt="Mindset Ladder" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('PM Career & Growth')">PM Career & Growth</span>
+        <h3 style="margin-top:8px;">Mindset Ladder</h3>
+        <p>The levels of PM thinking — from task-executor to strategic operator and what it takes to climb each rung.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Skip Step SaaS -->
+      <div class="card" onclick="go('concept-skip-step')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!KMmc!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0a3a3f9c-5259-4b04-b9c0-9615e54f26df_5931x8260.jpeg" alt="Skip Step SaaS" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('B2B Strategy')">B2B Strategy</span>
+        <h3 style="margin-top:8px;">Skip Step SaaS</h3>
+        <p>Why enterprise buyers skip the expected adoption steps — and how to build products that meet them where they actually land.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Patience vs Progress -->
+      <div class="card" onclick="go('concept-patience-progress')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!hus9!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Ff010cdd6-597d-4eba-94ee-0dfd53622003_4898x3265.jpeg" alt="Patience vs Progress" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Leadership & Teams')">Leadership & Teams</span>
+        <h3 style="margin-top:8px;">Patience vs Progress</h3>
+        <p>When to hold the line and when to adapt — the tension every product leader has to navigate and how to tell the difference.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Product Lexicon -->
+      <div class="card" onclick="go('concept-product-lexicon')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!S47M!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb4b420e9-c04f-4747-b390-a535a6670b27_2497x1601.jpeg" alt="Product Lexicon" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('Product Development')">Product Development</span>
+        <h3 style="margin-top:8px;">Product Lexicon</h3>
+        <p>A shared vocabulary for product teams — the terms worth agreeing on and why language precision matters more than most leaders think.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- Customer Centricity -->
+      <div class="card" onclick="go('concept-customer-centricity')" style="cursor:pointer;">
+        <div style="margin-bottom:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border-light);height:160px;">
+          <img src="https://substackcdn.com/image/fetch/$s_!Fi3-!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fac77231e-64f8-4321-9ddf-6531d903539e_1024x1022.jpeg" alt="Customer Centricity" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+        </div>
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('B2B Strategy')">B2B Strategy</span>
+        <h3 style="margin-top:8px;">Customer Centricity</h3>
+        <p>Being customer-centric is more than doing interviews — a multi-layered framework for what it actually looks like in practice.</p>
+        <div class="meta">Click to expand</div>
+      </div>
+
+      <!-- IN DEVELOPMENT -->
+
+      <!-- PM Competencies -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">PM Competencies</h3>
+        <p>A structured map of what great product management actually requires — across craft, influence, and judgment.</p>
+        <div class="meta">in development</div>
+      </div>
+
+      <!-- Scaling B2B Products -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">Scaling B2B Products</h3>
+        <p>The flywheel, the asymptotes, and the loops — a visual system for understanding how B2B products grow.</p>
+        <div class="meta">Flywheel · Asymptotes · Loops & Expansion</div>
+      </div>
+
+      <!-- B2B Onboarding -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">B2B Onboarding</h3>
+        <p>FTUX for the enterprise — a revised framework focused on the Head of Product perspective and the moments that matter most.</p>
+        <div class="meta">in development</div>
+      </div>
+
+      <!-- B2B Personas -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">B2B Personas</h3>
+        <p>The distinct buyer and user archetypes in B2B — and why conflating them is one of the most expensive mistakes a product team can make.</p>
+        <div class="meta">in development</div>
+      </div>
+
+      <!-- Decisions -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">Decisions</h3>
+        <p>A decision tree for product leaders — the branching logic behind how good decisions get made under ambiguity.</p>
+        <div class="meta">More posts needed</div>
+      </div>
+
+      <!-- Exponential Hires -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">Exponential Hires</h3>
+        <p>The talent decisions that compound — why some hires create disproportionate leverage and how to identify them before you make the offer.</p>
+        <div class="meta">in development</div>
+      </div>
+
+      <!-- Platform Plays -->
+      <div class="card" style="opacity:0.65;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:8px;">Platform Plays</h3>
+        <p>The strategic moves available to platform product teams — when to open up, when to lock in, and when to go vertical.</p>
+        <div class="meta">in development</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT DETAIL: South Star Metrics ============================== -->
+<div id="page-concept-south-star" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">South Star Metrics</h1>
+      <p class="subtitle" style="font-size:16px;">When your north star leads south — the 7 anti-pattern metrics that look good but send teams the wrong direction.</p>
+    </div>
+
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">
+      Every team wants a north star metric — a single number that captures whether the product is working. But most north stars are secretly south stars: metrics that feel meaningful, get celebrated in all-hands, and quietly send teams in the wrong direction. This essay maps the 7 most common anti-patterns, from vanity metrics that look great in decks to gaming metrics that improve the number without improving the product. The goal isn't to abandon measurement — it's to get rigorous about what you're actually measuring and why.
+    </p>
+
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!fZZQ!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F65828f68-5e9b-4390-88d3-d34004ba94ce_1876x1322.png" alt="South Star Metrics diagram" style="width:100%;height:100%;object-fit:contain;display:block;background:var(--gold-bg);" />
+    </div>
+
+    <div style="margin-top:8px;display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/south-star-metrics" target="_blank">Read the full essay →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/south-star-metrics-revisited" target="_blank">Read the revisited version →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Product Market Flex ============================== -->
+<div id="page-concept-product-market-flex" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">Product Market Flex</h1>
+      <p class="subtitle" style="font-size:16px;">B2B products don't achieve product-market fit once and coast — they have to flex continuously as the market shifts.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">B2B products don't achieve product-market fit once and coast — they have to flex continuously as the market shifts, the customer base expands, and competition intensifies. This framework maps the modes of adaptation: how to recognize when your current fit is decaying, and what levers to pull to re-establish it. The goal isn't to find PMF; it's to build the muscle for flexing with the market over time.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!NECQ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F38c30a13-f353-48d7-bb31-5d7fcaaf0965_7124x6877.jpeg" alt="Product Market Flex" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/product-market-flex" target="_blank">Read the full essay →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: TCO in B2B ============================== -->
+<div id="page-concept-tco" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">TCO in B2B</h1>
+      <p class="subtitle" style="font-size:16px;">AI agents are scrambling the total cost of ownership calculus in ways most vendors haven't accounted for.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Total cost of ownership has always been a key factor in enterprise buying decisions — but AI agents are scrambling the math in ways most vendors haven't accounted for. When software can do in minutes what previously required headcount, the TCO calculus shifts from license cost to capability cost, and B2B products that don't reframe their value accordingly will lose deals they should win. The podcast episode and companion essay explore how to think about TCO in a world where AI is rapidly changing what "cost" means.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!VtmI!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F333808f8-66ac-48ae-a4f7-722084322a64_3280x2416.png" alt="TCO in B2B" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/how-ai-agents-will-affect-tco-in" target="_blank">Listen to the episode →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/death-and-taxes-in-b2b" target="_blank">Read: Death & Taxes in B2B →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Career Asymptotes ============================== -->
+<div id="page-concept-career-asymptotes" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept · 2-Part Series</p>
+      <h1 style="font-size:32px;margin-top:8px;">Career Asymptotes</h1>
+      <p class="subtitle" style="font-size:16px;">The invisible forces that cap your growth as a PM — and what it actually takes to break through the ceiling.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Most PM career plateaus aren't caused by lack of effort — they're caused by invisible ceiling effects that feel like walls but are actually asymptotes: you can keep approaching them forever without breaking through. This two-part series names the specific forces that create these ceilings, from reputation traps to skill gaps that compound over time. Understanding the asymptote is the first step to escaping it.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!JIea!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdac2df6c-39b7-439e-939e-09bd6299531d_4068x3933.jpeg" alt="Career Asymptotes" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/invisible-career-asymptotes-part" target="_blank">Read Part 1 →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/invisible-career-asymptotes-part-b1f" target="_blank">Read Part 2 →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Strategy Coherence ============================== -->
+<div id="page-concept-strategy-coherence" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">Strategy Coherence</h1>
+      <p class="subtitle" style="font-size:16px;">Strategy fails less often because it's wrong and more often because it's incoherent.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Strategy fails less often because it's wrong and more often because it's incoherent — different parts of the organization optimizing for different interpretations of the same plan. This framework maps the four dimensions of strategic coherence: what it takes to stay synced across levels, functions, and time. Getting these four things right doesn't guarantee the strategy works, but getting any one of them wrong almost guarantees it won't.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!JCer!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd6bd7357-3c4b-4195-b2c1-9b683aac38ef_7153x6849.jpeg" alt="Strategy Coherence" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/staying-synced-on-strategy" target="_blank">Read the full essay →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Promo Playbook ============================== -->
+<div id="page-concept-promo-playbook" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">Promo Playbook</h1>
+      <p class="subtitle" style="font-size:16px;">Getting promoted isn't about working harder — it's about making the right things visible to the right people.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Getting promoted isn't about working harder — it's about understanding what the level above you actually requires and making those requirements visible to the people who decide. This playbook maps the promotion game as a product problem: who are the stakeholders, what are their criteria, and how do you build a case that's hard to argue with. The tactics here apply at every level, from IC to director.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!3KuJ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb2b972f9-2cc9-4f2a-8b58-114bb48abefe_10409x4707.jpeg" alt="Promo Playbook" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/promo-playbook" target="_blank">Listen to the episode →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Revenue KPIs ============================== -->
+<div id="page-concept-revenue-kpis" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept · 2 Posts</p>
+      <h1 style="font-size:32px;margin-top:8px;">Revenue KPIs / Metrics Ladder</h1>
+      <p class="subtitle" style="font-size:16px;">Connecting daily product decisions to business KPIs — the ladder from work to revenue to the board.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">The gap between what product teams ship and what shows up in revenue numbers is one of the most frustrating disconnects in B2B — and it's almost always a measurement problem, not a product problem. This framework builds a ladder from daily product decisions to business KPIs, making the causal chain explicit so teams can measure what actually matters. Understanding the ladder is what separates product teams that drive revenue from product teams that just talk about it.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!TIF4!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9477e07c-41d9-471e-aec8-643ec0026d66_12010x4079.jpeg" alt="Revenue KPIs / Metrics Ladder" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/connecting-b2b-products-to-revenue" target="_blank">Read: Connecting B2B Products to Revenue →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/from-daily-decisions-to-bottom-line" target="_blank">Read: From Daily Decisions to Bottom Line →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Mindset Ladder ============================== -->
+<div id="page-concept-mindset-ladder" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">Mindset Ladder</h1>
+      <p class="subtitle" style="font-size:16px;">The levels of PM thinking — and the mental model shifts that have to happen at each rung.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">The difference between a junior PM and a senior one isn't just experience — it's a fundamentally different way of framing problems, defining success, and deciding where to spend attention. This framework maps the rungs of the PM mindset ladder: the shifts in thinking that have to happen at each level, and what gets in the way of making those shifts. Most PM career development focuses on skills; this focuses on the mental models underneath them.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!ezsZ!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5308b377-7076-4968-b201-8aceb58c9773_7728x6340.jpeg" alt="Mindset Ladder" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/the-pm-mindset-ladder" target="_blank">Read the full essay →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Skip Step SaaS ============================== -->
+<div id="page-concept-skip-step" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">Skip Step SaaS</h1>
+      <p class="subtitle" style="font-size:16px;">Enterprise buyers don't follow the expected adoption sequence — and products that assume they will pay the price.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Enterprise buyers don't follow the expected adoption sequence — they enter products at different points, skip steps that seem logical from the inside, and often reach value through paths the product team never anticipated. Understanding skip-step behavior is the key to B2B FTUX: designing onboarding not for the ideal user journey but for the actual one. This essay maps the phenomenon and offers a framework for designing products that meet buyers where they actually land.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!KMmc!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0a3a3f9c-5259-4b04-b9c0-9615e54f26df_5931x8260.jpeg" alt="Skip Step SaaS" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/skip-step-saas" target="_blank">Read the full essay →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Patience vs Progress ============================== -->
+<div id="page-concept-patience-progress" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept</p>
+      <h1 style="font-size:32px;margin-top:8px;">Patience vs Progress</h1>
+      <p class="subtitle" style="font-size:16px;">When to hold the line and when to adapt — one of the most consequential calls a product leader makes.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Every product leader faces the tension between holding a position and adapting to new information — between patience (staying the course when results are slow) and progress (knowing when the course itself needs to change). This framework gives you the diagnostic: what signals indicate you need more time vs. a different direction, and how to tell the difference before you've wasted too much of either. Getting this call wrong in either direction is one of the most expensive mistakes a product leader can make.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!hus9!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Ff010cdd6-597d-4eba-94ee-0dfd53622003_4898x3265.jpeg" alt="Patience vs Progress" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/patience-vs-progress" target="_blank">Read the full essay →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Product Lexicon ============================== -->
+<div id="page-concept-product-lexicon" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept · 2 Versions</p>
+      <h1 style="font-size:32px;margin-top:8px;">Product Lexicon</h1>
+      <p class="subtitle" style="font-size:16px;">Shared vocabulary is infrastructure — and most product teams are building on undefined terms.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Shared vocabulary is infrastructure — and most product teams are building on a foundation of undefined terms, contested meanings, and language that means different things to different people. This lexicon maps the key product concepts worth agreeing on as a team, from the difference between outputs and outcomes to what "strategy" actually means in practice. The goal isn't pedantry; it's precision, and precision is what separates teams that move fast from teams that move fast in circles.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!S47M!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb4b420e9-c04f-4747-b390-a535a6670b27_2497x1601.jpeg" alt="Product Lexicon" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/the-product-lexicon-v2" target="_blank">Read v2 →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/the-product-lexicon" target="_blank">Read v1 →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== CONCEPT: Customer Centricity ============================== -->
+<div id="page-concept-customer-centricity" class="page">
+  <div class="container">
+    <div class="series-header">
+      <a class="back-link" onclick="go('concepts')">← Back to Concepts</a>
+      <p class="label">Concept · 3 Versions</p>
+      <h1 style="font-size:32px;margin-top:8px;">Customer Centricity</h1>
+      <p class="subtitle" style="font-size:16px;">Being customer-centric isn't a mindset — it's a discipline, and it has layers.</p>
+    </div>
+    <p style="font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:620px;margin:24px 0 40px;">Being customer-centric isn't a mindset — it's a discipline, and it has layers. Most teams that say they're customer-centric mean they do user research; this framework maps what actual customer centricity looks like across the full stack: from how you gather signal to how you make decisions to how you measure whether the customer is actually winning. This is the third version of the framework, refined through years of coaching product leaders and watching where the earlier versions fell short.</p>
+    <div style="margin:0 0 40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);">
+      <img src="https://substackcdn.com/image/fetch/$s_!Fi3-!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fac77231e-64f8-4321-9ddf-6531d903539e_1024x1022.jpeg" alt="Customer Centricity" style="width:100%;display:block;" />
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="https://runthebusiness.substack.com/p/the-layers-of-customer-centricity-be2" target="_blank">Read v3 →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/the-layers-of-customer-centricity-1d0" target="_blank">Read v2 →</a>
+      <a class="btn btn-outline" href="https://runthebusiness.substack.com/p/the-layers-of-customer-centricity" target="_blank">Read v1 →</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================== SKILLS ============================== -->
+<div id="page-skills" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Skills</p>
+      <h1 style="font-size:32px;">Claude Skills for PMs</h1>
+      <p class="subtitle" style="font-size:16px;">Downloadable AI tools built on RTB frameworks. Install them in Claude and get Ibrahim's thinking embedded in your workflow.</p>
+    </div>
+
+    <div class="card-grid cols-2">
+<div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">Flywheel Generator</h3>
+        <p>Map your product's self-reinforcing loop — the structural flywheel that drives compounding value. Identify what makes your loop defensible and how to extend it as you scale.</p>
+        <div class="meta">Installable</div>
+      </div>
+            <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">Strategy Review</h3>
+        <p>Paste your product strategy doc and get feedback grounded in RTB frameworks — from GIGO signals to coherence checks.</p>
+        <div class="meta">in development</div>
+      </div>
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">Metrics Audit</h3>
+        <p>Analyze your metrics stack for south star anti-patterns and get recommendations for what to measure instead.</p>
+        <div class="meta">in development</div>
+      </div>
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">Promo Playbook</h3>
+        <p>Make the promotion case airtight. Framework: the quantifiable business impact, how it's perceived cross-functionally, and why now. Structure the conversation like a professional product launch.</p>
+        <div class="meta">in development</div>
+      </div>
+      <div class="card" style="opacity:0.5;cursor:default;">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('coming soon')">coming soon</span>
+        <h3 style="margin-top:12px;">KPI Ladder</h3>
+        <p>Map your daily product decisions to business KPIs — visualize and validate how your work connects to revenue.</p>
+        <div class="meta">in development</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:48px 0;">
+      <p style="font-size:14px;color:var(--text-tertiary);">Claude Skills are available for <a href="https://runthebusiness.substack.com/subscribe" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500;">paid subscribers of Run the Business →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== PRINCIPLES ============================== -->
+<div id="page-principles" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Principles</p>
+      <h1 style="font-size:32px;">Illustrated principles</h1>
+      <p class="subtitle" style="font-size:16px;">Core beliefs and mental models, illustrated. Shareable visuals that link back to the essays behind them.</p>
+    </div>
+
+    <div class="visual-grid">
+      <div class="visual-card">
+        <div class="visual-icon">▶️</div>
+        <h3>Iteration » Ideation</h3>
+        <p>Bias for action over talking</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">🌐</div>
+        <h3>System » Sections</h3>
+        <p>End-to-end over components</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">🏗️</div>
+        <h3>Foundation » Features</h3>
+        <p>Building blocks that compound</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">✨</div>
+        <h3>Synthesis » Status</h3>
+        <p>Insights over updates</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">📈</div>
+        <h3>Outcomes » Output</h3>
+        <p>Move the needle vs a needle</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">♾️</div>
+        <h3>Sustainable » Sporadic</h3>
+        <p>Scale properly from day one</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">🧠</div>
+        <h3>Fluidity » Firmness</h3>
+        <p>Strong opinions, weakly held</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">📋</div>
+        <h3>Planning » Plans</h3>
+        <p>The habit beats the roadmap</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">💎</div>
+        <h3>Quality » Quickness</h3>
+        <p>Quality can't be a bolt-on</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">🔊</div>
+        <h3>Proxies » Process</h3>
+        <p>Learn from multiple sources</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">🧭</div>
+        <h3>Direction » Data</h3>
+        <p>Data for direction, not precision</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">🔄</div>
+        <h3>Loops » Leaps</h3>
+        <p>Skill beats luck every time</p>
+      </div>
+      <div class="visual-card">
+        <div class="visual-icon">✍️</div>
+        <h3>Writing » Winging</h3>
+        <p>Articulate deeply through docs</p>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;">
+      <p class="label">Quote of the Day Collection</p>
+      <p style="font-size:14px;color:var(--text-secondary);margin-top:8px;">Short-form principle cards — shareable visuals from the archive.</p>
+      <div class="card-grid cols-3" style="margin-top:16px;">
+        <div class="visual-card" style="aspect-ratio:auto;padding:20px;">
+          <h3 style="font-size:13px;">South Star Metrics, Revisited</h3>
+          <p>QotD visual</p>
+        </div>
+        <div class="visual-card" style="aspect-ratio:auto;padding:20px;">
+          <h3 style="font-size:13px;">The 12th of Never</h3>
+          <p>QotD visual</p>
+        </div>
+        <div class="visual-card" style="aspect-ratio:auto;padding:20px;">
+          <h3 style="font-size:13px;">The Interface Was the Product</h3>
+          <p>QotD visual</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== MEMBERSHIP ============================== -->
+<div id="page-membership" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:16px;">
+      <p class="label">Membership</p>
+      <h1 style="font-size:32px;">Choose a plan</h1>
+      <p class="subtitle" style="font-size:16px;">Full access to 200+ essays, podcasts, and community — pick what works for you.</p>
+    </div>
+
+    <div class="pricing-grid">
+
+      <!-- FREE -->
+      <div class="pricing-card">
+        <h3>Free</h3>
+        <div class="price">$0</div>
+        <p class="price-sub"></p>
+        <ul class="benefit-list">
+          <li class="unavailable"><span class="chk no">✗</span>Full archive (essays, podcasts, videos)</li>
+          <li class="unavailable"><span class="chk no">✗</span>Every new post delivered immediately</li>
+          <li class="unavailable"><span class="chk no">✗</span>Discussions (Slack + Substack chat)</li>
+          <li><span class="chk yes">✓</span>New posts free for 2 weeks (Run the Business, 5 Minute Fridays, 60 Minute Stories)</li>
+        </ul>
+        <a class="btn btn-outline" style="margin-top:24px;width:100%;justify-content:center;box-sizing:border-box;" href="https://runthebusiness.substack.com" target="_blank">Follow for free</a>
+      </div>
+
+      <!-- MONTHLY -->
+      <div class="pricing-card">
+        <h3>Monthly</h3>
+        <div class="price">$10<span>/mo</span></div>
+        <p class="price-sub">Billed monthly</p>
+        <ul class="benefit-list">
+          <li><span class="chk yes">✓</span>Full archive (200+ essays, podcasts, videos)</li>
+          <li><span class="chk yes">✓</span>Every new post delivered immediately, forever</li>
+          <li><span class="chk yes">✓</span>Discussions (Slack community + Substack chat)</li>
+        </ul>
+        <a class="btn btn-outline" style="margin-top:24px;width:100%;justify-content:center;box-sizing:border-box;" href="https://runthebusiness.substack.com/subscribe" target="_blank">Subscribe monthly</a>
+      </div>
+
+      <!-- ANNUAL -->
+      <div class="pricing-card featured">
+        <h3>Annual</h3>
+        <div class="price">$99<span>/yr</span></div>
+        <p class="price-sub">$8.25/month · 18% cheaper</p>
+        <ul class="benefit-list">
+          <li><span class="chk yes">✓</span>Full archive (200+ essays, podcasts, videos)</li>
+          <li><span class="chk yes">✓</span>Every new post delivered immediately, forever</li>
+          <li><span class="chk yes">✓</span>Discussions (Slack community + Substack chat)</li>
+          <li><span class="chk yes">✓</span>18% cheaper than subscribing monthly</li>
+        </ul>
+        <a class="btn btn-primary" style="margin-top:24px;width:100%;justify-content:center;box-sizing:border-box;" href="https://runthebusiness.substack.com/subscribe" target="_blank">Subscribe annually</a>
+      </div>
+
+      <!-- FOUNDING MEMBER -->
+      <div class="pricing-card">
+        <h3>Founding Member</h3>
+        <div class="price">$200<span>/yr</span></div>
+        <p class="price-sub">For those who want to go deeper</p>
+        <ul class="benefit-list">
+          <li><span class="chk yes">✓</span>Full archive (200+ essays, podcasts, videos)</li>
+          <li><span class="chk yes">✓</span>Every new post delivered immediately, forever</li>
+          <li><span class="chk yes">✓</span>Discussions (Slack community + Substack chat)</li>
+          <li><span class="chk yes">✓</span>1:1 call with Ibrahim (mentoring / coaching / advice)</li>
+        </ul>
+        <a class="btn btn-outline" style="margin-top:24px;width:100%;justify-content:center;box-sizing:border-box;" href="https://runthebusiness.substack.com/subscribe" target="_blank">Become a Founding Member</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SPEAKING ============================== -->
+<div id="page-speaking" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">Speaking</p>
+      <h1 style="font-size:32px;">Storytelling at scale</h1>
+      <p class="subtitle" style="font-size:16px;max-width:560px;">I love storytelling, and that's the steel thread running through every talk, podcast, and panel I do. If you'd like me for a keynote, podcast, or webinar — <a href="https://runthebusiness.substack.com/p/speaking" target="_blank" style="color:var(--accent);">get in touch</a>.</p>
+    </div>
+
+    <!-- Featured Conferences -->
+    <p class="label" style="margin-bottom:20px;">Conferences</p>
+    <div class="card-grid cols-3" style="margin-bottom:48px;">
+
+      <div class="card">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('2024 · ProductCon NYC')">2024 · ProductCon NYC</span>
+        <h3 style="margin-top:12px;">Connecting Product Work to Revenue</h3>
+        <p>How B2B product leaders build the ladder from daily decisions to board-level metrics — and why most teams get it backwards.</p>
+        <a class="btn btn-outline" style="margin-top:16px;font-size:13px;" href="https://www.youtube.com/watch?v=uPKJSvnbicc" target="_blank">Watch →</a>
+      </div>
+
+      <div class="card">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('2022 · La Product Conf Madrid')">2022 · La Product Conf Madrid</span>
+        <h3 style="margin-top:12px;">Steering through Strategy Spirals</h3>
+        <p>Why strategy discussions go in circles, how to diagnose the loops, and the practical moves that break teams out of them.</p>
+        <a class="btn btn-outline" style="margin-top:16px;font-size:13px;" href="https://www.youtube.com/watch?v=qmMGgPEsxZo" target="_blank">Watch →</a>
+      </div>
+
+      <div class="card">
+        <span class="tag" style="cursor:pointer;" onclick="event.stopPropagation(); goToLibraryWithTopic('2015 · World Web Forum')">2015 · World Web Forum</span>
+        <h3 style="margin-top:12px;">Build. Ship! Repeat? 9 Characteristics of a $1B Culture</h3>
+        <p>What it actually takes to build an enduring innovation culture — from the inside of one of the world's fastest-moving tech companies.</p>
+        <a class="btn btn-outline" style="margin-top:16px;font-size:13px;" href="https://www.youtube.com/watch?v=hHebu9r0fSc" target="_blank">Watch →</a>
+      </div>
+
+    </div>
+
+    <!-- Podcasts -->
+    <p class="label" style="margin-bottom:16px;">Podcasts</p>
+    <div style="margin-bottom:40px;">
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Zero to One Product Journeys — Building Category-Defining Products</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">The Priyanka Shinde Podcast — Secrets Behind Successful Product Leadership</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">The Priyanka Shinde Podcast — The Real Mindset Behind Promotions in Product Roles</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Leveraging Data Literacy and Storytelling in Product Management</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">The Elusive Consumer — The Art of Product Leadership</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Product School — Scaling B2B Products for Growth Success</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Everything Product — The Art of Networking & Relationship Building</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Product Team Success — Unlock the Secrets of Product Growth</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Product Coffee — B2B Product Leadership Mastery</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Somehow I Manage Product Teams — 2 SaaSy 2 B2B</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">How I Started — Figure Out What Matters to You</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Build with Maggie Crowley — Product Strategy Teardown</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">The Seven Eighths — Reframing</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">🎙</span><span class="post-body"><span class="post-title">Product Love — Product Value</span></span></div>
+    </div>
+
+    <!-- Webinars -->
+    <p class="label" style="margin-bottom:16px;">Webinars</p>
+    <div style="margin-bottom:40px;">
+      <div class="post-item" style="cursor:default;"><span class="post-icon">💻</span><span class="post-body"><span class="post-title">Product School (Nov 2024) — Scaling B2B Products for Growth Success</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">💻</span><span class="post-body"><span class="post-title">ProdPad (Apr 2022) — How to Build a Scalable Multi-Product Strategy</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">💻</span><span class="post-body"><span class="post-title">Product Management Festival — Optimizing CX Through Product Analytics</span></span></div>
+      <div class="post-item" style="cursor:default;"><span class="post-icon">💻</span><span class="post-body"><span class="post-title">ProdPad (Jan 2021) — The Power of Product Feedback Loops</span></span></div>
+    </div>
+
+    <!-- Panels -->
+    <p class="label" style="margin-bottom:16px;">Panels</p>
+    <div style="margin-bottom:40px;">
+      <div class="post-item" style="cursor:default;"><span class="post-icon">👥</span><span class="post-body"><span class="post-title">Chisel Labs (Jun 2024) — The Future of Product Management</span></span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================== ABOUT ============================== -->
+<div id="page-about" class="page">
+  <div class="container">
+    <div class="hero" style="padding-bottom:32px;">
+      <p class="label">About</p>
+      <h1 style="font-size:32px;">Ibrahim Bashir</h1>
+      <p class="subtitle" style="font-size:16px;">
+        Head of Product at a late-stage scale-up. Writer, speaker, and coach focused on helping product leaders build better and think more clearly.
+      </p>
+    </div>
+    <div class="card-grid cols-2">
+      <div class="card" onclick="go('speaking')" style="cursor:pointer;">
+        <h3>Speaking</h3>
+        <p>Conferences, podcasts, webinars, and panels — on B2B product strategy, connecting product to revenue, and scaling as a product leader.</p>
+        <div class="meta" style="margin-top:12px;">View all engagements →</div>
+      </div>
+      <div class="card">
+        <h3>Work With Me</h3>
+        <p>Coaching and advisory for product leaders navigating growth, strategy, and organizational challenges.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span>🍋 © 2026 LemonAid. Ibrahim Bashir.</span>
+    <div class="footer-links">
+      <a onclick="go('speaking')">Speaking</a>
+      <a href="https://runthebusiness.substack.com" target="_blank">Newsletter</a>
+      <a href="https://www.linkedin.com/in/ibrahimbashir/" target="_blank">Contact</a>
+      <a href="https://runthebusiness.substack.com/subscribe" target="_blank">Subscribe</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// === POST DATA ===
+const posts = [
+  { title: "Uncertainty-Driven Discovery", summary: "On using uncertainty as the primary signal in discovery — and why the most valuable thing you can find is what you don\'t know yet.", date: "Apr 2026", topics: ["product-dev", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/uncertainty-driven-discovery", type: "video" },
+  { title: "(In)Validation: The Pivotal Product Management Skill", summary: "Why the most important PM skill isn\'t validating ideas — it\'s invalidating them faster and more cheaply.", date: "Feb 2026", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/invalidation-the-pivotal-product", type: "essay" },
+  { title: "The tl;dr of the PM Role", summary: "A concise reframe of what product managers actually do in the age of AI — and what that means for the role going forward.", date: "Jan 2026", topics: ["career", "ai"], url: "https://runthebusiness.substack.com/p/the-tldr-of-the-pm-role", type: "essay" },
+  { title: "Enterprise SaaS Truisms, Revisited", summary: "A return to the core beliefs about enterprise SaaS — and which ones AI has already broken.", date: "Mar 2026", topics: ["b2b-strategy", "ai"], url: "https://runthebusiness.substack.com/p/enterprise-saas-truisms-revisited", type: "essay" },
+  { title: "The Interface Was the Product", summary: "How AI has collapsed the distinction between interface and product, and why that changes what PMs need to care about.", date: "Mar 2026", topics: ["ai", "product-dev"], url: "https://runthebusiness.substack.com/p/the-interface-was-the-product", type: "essay" },
+  { title: "South Star Metrics, Revisited", summary: "An updated look at the 7 anti-pattern metrics that mislead B2B teams — and what to measure instead.", summary: "An updated look at the 7 anti-pattern metrics that mislead B2B teams — and what to measure instead.", date: "Mar 2026", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/south-star-metrics-revisited", type: "essay" },
+  { title: "The Most Expensive Dysfunction in B2B Product Companies", summary: "When R&D and GTM can\'t see they\'re solving the same problem, products ship but outcomes don\'t follow.", summary: "When R&D and GTM can't see they're solving the same problem, products ship but outcomes don't follow.", date: "Mar 2026", topics: ["b2b-strategy", "leadership"], url: "https://runthebusiness.substack.com/p/the-most-expensive-dysfunction-in", type: "essay" },
+  { title: "Platform Products & Metrics Myths", summary: "The common misconceptions about how to measure platform products — and why applying consumer metrics to platform breaks your thinking.", date: "Sep 2025", topics: ["platform", "metrics"], url: "https://runthebusiness.substack.com/p/platform-products-and-metrics-myths", type: "essay" },
+  { title: "The Unimpactful PM", summary: "A diagnosis of why smart, hardworking PMs end up with nothing to show for it — and the structural reasons it happens.", date: "Jun 2025", topics: ["career", "leadership"], url: "https://runthebusiness.substack.com/p/the-unimpactful-pm", type: "essay" },
+  { title: "Demystifying Platform Product Management", summary: "What platform PM actually is, when it makes sense, and why it\'s fundamentally different from feature PM.", date: "Apr 2025", topics: ["platform"], url: "https://runthebusiness.substack.com/p/demystifying-platform-product-management", type: "essay" },
+  { title: "FTUX in B2B", summary: "Why first-time user experience in B2B is harder than in consumer — and the specific failure modes to watch for.", date: "Mar 2025", topics: ["product-dev", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/ftux-in-b2b", type: "essay" },
+  { title: "Writing is Reflecting", summary: "On writing as a tool for looking back — and how reflection compounds into better thinking over time.", date: "Mar 2025", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-reflecting", type: "essay" },
+  { title: "Manufacturing Champions (Part 2)", summary: "How to overcome the conceptual inertia that keeps R&D and GTM from aligning — and what it takes to break through.", date: "Dec 2024", topics: ["b2b-strategy", "leadership"], url: "https://runthebusiness.substack.com/p/manufacturing-champions-part-2", type: "essay" },
+  { title: "Manufacturing Champions (Part 1)", summary: "The shared, latent north star of every B2B product: why R&D and GTM are solving the same problem from different angles.", date: "Dec 2024", topics: ["b2b-strategy", "leadership"], url: "https://runthebusiness.substack.com/p/manufacturing-champions-part-1", type: "essay" },
+  { title: "Product Market Flop", summary: "A taxonomy of how products fail to find their market — and the patterns that show up before it\'s too late to fix.", date: "Dec 2024", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/product-market-flop", type: "essay" },
+  { title: "Invisible Career Asymptotes (Part 2)", summary: "The strategies for breaking through the hidden ceiling — and what it actually looks like to cross it.", date: "Oct 2024", topics: ["career"], url: "https://runthebusiness.substack.com/p/invisible-career-asymptotes-part-b1f", type: "essay" },
+  { title: "Invisible Career Asymptotes (Part 1)", summary: "The hidden forces that quietly cap your growth as a PM — and why most people don\'t see them until they\'ve already hit them.", date: "Oct 2024", topics: ["career"], url: "https://runthebusiness.substack.com/p/invisible-career-asymptotes-part", type: "essay" },
+  { title: "Why Platform-ify?", summary: "A framework for deciding when and why to build a platform — and why companies often do it for the wrong reasons.", date: "Sep 2024", topics: ["platform", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/why-platform-ify", type: "essay" },
+  { title: "Building Hardware", summary: "What\'s different about building physical products — and the lessons from hardware that software PMs rarely get.", date: "Sep 2024", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/building-hardware", type: "essay" },
+  { title: "AI as an Unlock for B2B Pricing", summary: "How AI changes the pricing surface in B2B — from usage-based models to outcome-based pricing and what comes next.", date: "Jun 2024", topics: ["ai", "pricing"], url: "https://runthebusiness.substack.com/p/ai-as-an-unlock-for-b2b-pricing", type: "essay" },
+  { title: "Layering AI into your B2B Product and GTM (Video)", summary: "A conversation with Anurag Wadehra on where AI fits in the B2B product and GTM stack — and how to layer it without losing the plot.", date: "Jun 2024", topics: ["ai", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/layering-ai-into-your-b2b-product-8e7", type: "video" },
+  { title: "Layering AI into your B2B Product and GTM", summary: "A practical framework for where AI fits in your product and go-to-market motion — and what to avoid.", date: "Jun 2024", topics: ["ai", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/layering-ai-into-your-b2b-product", type: "essay" },
+  { title: "From Daily Decisions to Bottom Line", summary: "How to trace the connection between daily product decisions and revenue outcomes — the metric ladder for B2B.", date: "Jun 2024", topics: ["pricing", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/from-daily-decisions-to-bottom-line", type: "essay" },
+  { title: "Falling into a Feature Factory", summary: "How product teams drift into shipping features without outcomes — and the early signals to catch it before it becomes a culture.", date: "May 2024", topics: ["product-dev", "leadership"], url: "https://runthebusiness.substack.com/p/falling-into-a-feature-factory", type: "essay" },
+  { title: "Accidentally Narrowing Your Market", summary: "The quiet ways B2B products shrink their addressable market through design choices, packaging, and positioning.", date: "Feb 2024", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/accidentally-narrowing-your-market", type: "essay" },
+  { title: "Product Leadership Principles", summary: "The core beliefs that should guide how you lead product — from strategy and prioritization to team dynamics and stakeholder trust.", date: "Nov 2023", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/product-leadership-principles", type: "essay" },
+  { title: "Bet Boldness", summary: "A framework for calibrating how aggressively to commit to product bets — and why most teams bet too timid.", date: "Nov 2023", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/bet-boldness", type: "essay" },
+  { title: "The Layers of Customer Centricity (v3)", summary: "The most evolved version of the customer centricity model — what it looks like to truly build the practice, layer by layer.", date: "Sep 2023", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-layers-of-customer-centricity-be2", type: "essay" },
+  { title: "Types of Product Innovation", summary: "A taxonomy of the different modes of product innovation — and how to know which type your team is actually doing.", date: "Sep 2023", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/types-of-product-innovation", type: "essay" },
+  { title: "Manufacturing Currency", summary: "How B2B products manufacture the \'currency\' that creates value for customers — and how to measure whether it\'s working.", date: "Aug 2023", topics: ["metrics", "pricing"], url: "https://runthebusiness.substack.com/p/manufacturing-currency", type: "essay" },
+  { title: "The PM Career Ladder: Your Unofficial Guide", summary: "A frank walkthrough of what each rung of the PM ladder actually requires — beyond what job descriptions say.", date: "May 2023", topics: ["career"], url: "https://runthebusiness.substack.com/p/the-pm-career-ladder-your-unofficial", type: "essay" },
+  { title: "Can We Demo Now?", summary: "Why demo culture in B2B is both a symptom and a cause of poor product thinking — and what healthy demo practice looks like.", date: "Apr 2023", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/can-we-demo-now", type: "essay" },
+  { title: "Product Sense", summary: "What product sense actually is, how it develops, and why it\'s the hardest thing to teach or hire for.", date: "Apr 2023", topics: ["product-dev", "career"], url: "https://runthebusiness.substack.com/p/product-sense", type: "essay" },
+  { title: "Why Moving Upmarket in B2B Works", summary: "The structural reasons B2B companies drift upmarket — and why it\'s often the right move even when it feels risky.", date: "Apr 2023", topics: ["b2b-strategy", "pricing"], url: "https://runthebusiness.substack.com/p/why-moving-upmarket-in-b2b-works", type: "essay" },
+  { title: "The Product Lexicon (v2)", summary: "An updated shared vocabulary for product teams — the terms that matter and what they should actually mean.", date: "Mar 2023", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-product-lexicon-v2", type: "essay" },
+  { title: "Teaching Users Your Product", summary: "The underrated work of helping users build the mental models they need to get value from your product.", date: "Mar 2023", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/teaching-users-your-product", type: "essay" },
+  { title: "Eigenquestions as Answers", summary: "How to find the one question that, if answered, resolves all the others — and why most teams stop one level too shallow.", date: "Feb 2023", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/eigenquestions-as-answers", type: "essay" },
+  { title: "It's Time to Kill Your Product", summary: "The framework for knowing when to sunset a product rather than keep maintaining something that\'s already lost.", date: "Feb 2023", topics: ["product-dev", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/its-time-to-kill-your-product", type: "essay" },
+  { title: "Synthesizing Learnings", summary: "How to move from a pile of research and observations to a coherent point of view — the synthesis step most teams skip.", date: "Jan 2023", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/synthesizing-learnings", type: "essay" },
+  { title: "Writing is Building", summary: "On writing as construction — how the act of writing builds thinking, arguments, and products all in the same motion.", date: "Oct 2022", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-building", type: "essay" },
+  { title: "Product Paths", summary: "The different trajectories a product career can take — and how to think intentionally about which path you\'re on.", date: "Sep 2022", topics: ["career"], url: "https://runthebusiness.substack.com/p/product-paths", type: "essay" },
+  { title: "Product Market Flex", summary: "How to adapt your product to different market conditions without losing strategic coherence.", date: "Sep 2022", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/product-market-flex", type: "essay" },
+  { title: "Connecting B2B Products to Revenue", summary: "The framework for tracing how product work connects to revenue — and why most B2B teams struggle to make that connection.", date: "Sep 2022", topics: ["pricing", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/connecting-b2b-products-to-revenue", type: "essay" },
+  { title: "Death & Taxes in B2B", summary: "The two certainties of B2B product life — the customer demands that never go away and how to plan around them.", date: "Aug 2022", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/death-and-taxes-in-b2b", type: "essay" },
+  { title: "Data vs Intuition", summary: "The false choice between data and gut in product decisions — and how to use both without fooling yourself.", date: "May 2022", topics: ["product-dev", "metrics"], url: "https://runthebusiness.substack.com/p/data-vs-intuition", type: "essay" },
+  { title: "Deciding Free vs Paid in B2B Product Packaging", summary: "A principled framework for where to draw the free/paid line — a strategic decision, not just a financial one.", date: "Apr 2022", topics: ["pricing", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/deciding-free-vs-paid-in-b2b-product", type: "essay" },
+  { title: "Notably Not", summary: "The art of deciding what your product explicitly won\'t do — why the \'no\' list is as important as the roadmap.", date: "Apr 2022", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/notably-not", type: "essay" },
+  { title: "Product Onions", summary: "How products layer value over time — the onion model for thinking about depth, stickiness, and product evolution.", date: "Mar 2022", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/product-onions", type: "essay" },
+  { title: "Writing is Iterating", summary: "On the parallel between writing and shipping — both get better through revision, not through perfecting on the first pass.", date: "Mar 2022", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-iterating", type: "essay" },
+  { title: "Writing is Manifesting", summary: "How writing turns vague ambitions into concrete commitments — and why the best leaders write their futures into existence.", date: "Mar 2022", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-manifesting", type: "essay" },
+  { title: "Strategy Spirals", summary: "How strategy conversations go in circles — and the techniques for breaking the spiral and reaching a real decision.", date: "Feb 2022", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/strategy-spirals", type: "essay" },
+  { title: "Discerning Differentiators", summary: "How to identify what actually differentiates your product versus what just sounds good in a pitch deck.", date: "Feb 2022", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/discerning-differentiators", type: "essay" },
+  { title: "Staying Synced on Strategy", summary: "The mechanics of keeping a team aligned on strategy as priorities shift — the practices that actually work.", date: "Jan 2022", topics: ["leadership", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/staying-synced-on-strategy", type: "essay" },
+  { title: "Disoriented Teams", summary: "What happens when a team loses its strategic north star — the symptoms, the causes, and how to reorient.", date: "Jan 2022", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/disoriented-teams", type: "essay" },
+  { title: "Why Buy?", summary: "A framework for understanding buyer objectives in B2B and how purchase motivation should shape how you build and sell.", summary: "A framework for understanding buyer objectives in B2B — what actually drives purchase decisions and how it should shape how you build.", date: "Jan 2022", topics: ["b2b-strategy", "pricing"], url: "https://runthebusiness.substack.com/p/why-buy", type: "essay" },
+  { title: "Your IC Prime", summary: "What peak individual contributor performance looks like in product — and how to know if you\'re operating at yours.", date: "Sep 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/your-ic-prime", type: "essay" },
+  { title: "Resume Revisionism", summary: "Why PMs rewrite history on their resumes — and what interviewers should really be asking to get to the truth.", date: "Sep 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/resume-revisionism", type: "essay" },
+  { title: "Writing is Compounding", summary: "How the discipline of writing compounds over time — why the 100th post is easier and better than the 10th.", date: "Aug 2021", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-compounding", type: "essay" },
+  { title: "Be Nice to Engineering", summary: "Why the PM-engineering relationship is the most important one to get right — and the specific ways PMs damage it.", date: "Aug 2021", topics: ["leadership", "product-dev"], url: "https://runthebusiness.substack.com/p/be-nice-to-engineering", type: "essay" },
+  { title: "Enterprise SaaS Truisms", summary: "The original core beliefs about enterprise SaaS — the ones that have held up, and the ones that were always wrong.", date: "Jul 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/enterprise-saas-truisms", type: "essay" },
+  { title: "Skip Step SaaS", summary: "The pattern of B2B companies skipping foundational product steps to chase enterprise deals — and why it always catches up.", date: "May 2021", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/skip-step-saas", type: "essay" },
+  { title: "The PM Mindset Ladder", summary: "The progression of mental models from junior PM to executive — what changes at each level and why.", date: "Apr 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/the-pm-mindset-ladder", type: "essay" },
+  { title: "Transitioning to PM", summary: "A practical guide for making the move into product management — what to expect, what to build, and what to let go.", date: "Mar 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/transitioning-to-pm", type: "essay" },
+  { title: "Onboarding Artifacts", summary: "The documents and artifacts that make PM onboarding stick — what to build before a new hire\'s first day.", date: "Mar 2021", topics: ["leadership", "product-dev"], url: "https://runthebusiness.substack.com/p/onboarding-artifacts", type: "essay" },
+  { title: "Customer Experience Loops", summary: "How customer experience creates feedback loops that compound — the model for designing experiences that reinforce themselves.", date: "Jan 2021", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/customer-experience-loops", type: "essay" },
+  { title: "The Attribution Graph", summary: "How to think about attribution in B2B when the sales cycle is long and the buying committee is large.", date: "Jan 2021", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/the-attribution-graph", type: "essay" },
+  { title: "The Product Tree", summary: "A visual model for mapping product decisions — how to see the structure of your product from roots to branches.", date: "Jan 2021", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-product-tree", type: "essay" },
+  { title: "Writing is Connecting", summary: "On writing as a tool for building relationships — how publishing creates connections that conversation alone never would.", date: "Jan 2021", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-connecting", type: "essay" },
+  { title: "Metrics Malfunction", summary: "The ways product metrics break down in practice — and the diagnostic for figuring out what\'s wrong with your measurement system.", date: "Dec 2020", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/metrics-malfunction", type: "essay" },
+  { title: "The Ineffective Executive", summary: "A portrait of the executive who looks productive but isn\'t — the patterns that trap smart leaders in the wrong work.", date: "Dec 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/the-ineffective-executive", type: "essay" },
+  { title: "Implementing Product Strategy", summary: "The gap between having a strategy and executing one — the operational moves that turn strategy into shipped product.", date: "Nov 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/implementing-product-strategy", type: "essay" },
+  { title: "The 7 Signs of GIGO Strategy", summary: "How to spot a garbage-in-garbage-out strategy before it wastes a quarter — the seven red flags to watch for.", date: "Nov 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-7-signs-of-gigo-strategy", type: "essay" },
+  { title: "South Star Metrics", summary: "The original framework for the 7 anti-pattern metrics that mislead B2B teams — the foundation of the South Star model.", date: "Jun 2020", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/south-star-metrics", type: "essay" },
+  { title: "OKR Myths", summary: "The most common misunderstandings about OKRs — and why most implementations fail before they start.", date: "Jun 2020", topics: ["metrics", "leadership"], url: "https://runthebusiness.substack.com/p/okr-myths", type: "essay" },
+  { title: "Andon Cords: When to Cancel a Product Launch", summary: "The conditions under which you should pull the cord and stop a launch — and why most teams wait too long.", date: "Jun 2020", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/andon-cords-when-to-cancel-a-product", type: "essay" },
+  { title: "Customer Zero", summary: "The strategy of treating your first customer as a design partner rather than just a sale — and what you get in return.", date: "May 2020", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/customer-zero", type: "essay" },
+  { title: "The Power of Layering Product Choices", summary: "How compounding small product decisions creates a strategic moat — the case for coherent, cumulative product thinking.", date: "May 2020", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/the-power-of-layering-product-choices", type: "essay" },
+  { title: "Writing is Thinking", summary: "On writing as the clearest form of thinking — why you don\'t know what you believe until you\'ve tried to write it down.", date: "Apr 2020", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-thinking", type: "essay" },
+  { title: "Writing is Creating", summary: "On the creative act of writing — how a blank page forces the original thinking that discussion and slides never do.", date: "Jul 2020", topics: ["writing"], url: "https://runthebusiness.substack.com/p/writing-is-creating", type: "essay" },
+  { title: "Hunch Tracking", summary: "The practice of writing down your hunches and checking them — the habit that separates signal from noise in product intuition.", date: "May 2020", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/hunch-tracking", type: "essay" },
+  { title: "The 3 S's of the Product Lifecycle", summary: "A three-stage model for thinking about where your product is in its life — and what the right moves are at each stage.", date: "May 2020", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-3-ss-of-the-product-lifecycle", type: "essay" },
+  { title: "4 Ways to F Up Product Development", summary: "The four most reliable ways to make product development fail — and how to recognize when you\'re doing them.", date: "Jul 2020", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/4-ways-to-f-up-product-development", type: "essay" },
+  { title: "Cargo Culting Culture", summary: "Why copying the practices of high-performing teams without the context almost always backfires — and what to do instead.", date: "Jul 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/cargo-culting-culture", type: "essay" },
+  { title: "The 12th of Never", summary: "On the problems in B2B product that never truly get solved — and why making peace with that is part of the job.", date: "Mar 2026", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-12th-of-never", type: "essay" },
+  { title: "The Layers of Customer Centricity (v2)", summary: "The second iteration of the customer centricity model — deeper, more operational, and harder to fake.", date: "Jun 2023", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-layers-of-customer-centricity-1d0", type: "essay" },
+  { title: "Teaching Users Your Product...", summary: "A follow-up on user education — why the best products teach while they deliver value, not before.", date: "Mar 2023", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/teaching-users-your-product", type: "essay" },
+  { title: "WMT Interview Questions", summary: "The interview questions worth asking if you want to understand how a PM actually thinks — not just what they\'ve shipped.", date: "Feb 2023", topics: ["career"], url: "https://runthebusiness.substack.com/p/wmt-interview-questions-8d7", type: "essay" },
+  { title: "The Business Model Makes (or Breaks) the Business", summary: "How the business model shapes everything downstream in product — and why PMs can\'t treat it as someone else\'s problem.", date: "Nov 2022", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-business-model-makes-or-breaks", type: "essay" },
+  { title: "New Knowledge is in the Doing", summary: "Why the most important learning happens in the act of building — and why reading and planning can only take you so far.", date: "Apr 2022", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/new-knowledge-is-in-the-doing", type: "essay" },
+  { title: "The Evolving Definition of Product Management", summary: "How the PM role has shifted over time — and what the definition needs to account for now.", date: "Mar 2022", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-evolving-definition-of-product", type: "essay" },
+  { title: "Add-On Features vs New Product Lines", summary: "The decision framework for when a new capability is a feature versus when it deserves to be its own product.", date: "Mar 2022", topics: ["product-dev", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/add-on-features-vs-new-product-lines", type: "essay" },
+  { title: "The Right Book at the Right Time", summary: "On how timing determines whether a book changes you — and the PM reading list organized by career stage.", date: "Mar 2022", topics: ["writing"], url: "https://runthebusiness.substack.com/p/the-right-book-at-the-right-time", type: "essay" },
+  { title: "Patience vs Progress", summary: "The tension between moving fast and waiting for the right signal — how to calibrate when to push and when to hold.", date: "Feb 2022", topics: ["leadership", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/patience-vs-progress", type: "essay" },
+  { title: "Imposter Syndrome / Product Vision", summary: "On navigating imposter syndrome as a PM — and why having a strong product vision is the best antidote.", date: "Oct 2021", topics: ["career", "product-dev"], url: "https://runthebusiness.substack.com/p/imposter-syndrome-product-vision", type: "essay" },
+  { title: "The Anti-Moonshot Factory", summary: "Why most companies can\'t do moonshots even when they say they want to — and what to build for instead.", date: "Nov 2021", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/the-anti-moonshot-factory", type: "essay" },
+  { title: "Happy Customers or Healthy Scorecards?", summary: "The conflict between customer satisfaction and business metrics — and how to know which one you\'re actually optimizing for.", date: "Apr 2021", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/happy-customers-or-healthy-scorecards", type: "essay" },
+  { title: "WMT Interview Questions", date: "Apr 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/wmt-interview-questions", type: "essay" },
+  { title: "Span (vs Split) Personas", summary: "Why building for \'span\' personas rather than \'split\' personas leads to more coherent product decisions.", date: "Dec 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/span-vs-split-personas", type: "essay" },
+  { title: "Buried Treasure", summary: "The underutilized insights already sitting in your data and research — and how to surface them before starting from scratch.", date: "Nov 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/buried-treasure", type: "essay" },
+  { title: "Shiny Disco Balls", summary: "On the distraction of new frameworks and methodologies — and the discipline of staying focused on what actually works.", date: "Nov 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/shiny-disco-balls", type: "essay" },
+  { title: "Typing vs Tapping", summary: "The difference between desktop-first and mobile-first thinking in B2B — and why it matters more than most teams realize.", date: "Nov 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/typing-vs-tapping", type: "essay" },
+  { title: "Exponential Hires", summary: "The people who make everyone around them better — how to identify and hire for exponential talent on your team.", date: "Oct 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/exponential-hires", type: "essay" },
+  { title: "Your Actual Task List", summary: "What PMs are actually doing with their time versus what they should be — the gap most managers never see.", date: "Oct 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/your-actual-task-list", type: "essay" },
+  { title: "Enterprise Consumerization Entry", summary: "How consumer product patterns enter the enterprise — the entry points and the implications for B2B product strategy.", date: "Sep 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/enterprise-consumerization-entry", type: "essay" },
+  { title: "Illuminating Product Strategy", summary: "The tools and techniques for making product strategy visible and legible — to your team, your stakeholders, and yourself.", date: "Aug 2020", topics: ["leadership", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/illuminating-product-strategy", type: "essay" },
+  { title: "Debt Relief for Product Teams", summary: "The different kinds of debt that accumulate in product organizations — and how to pay them down without stopping the roadmap.", date: "Aug 2020", topics: ["leadership", "product-dev"], url: "https://runthebusiness.substack.com/p/debt-relief-for-product-teams", type: "essay" },
+  { title: "SCARF Management", summary: "How to apply the SCARF model — Status, Certainty, Autonomy, Relatedness, Fairness — to managing product teams effectively.", date: "Aug 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/scarf-management", type: "essay" },
+  { title: "Make Mom Proud", summary: "On the products worth building — and the simple test of whether what you\'re shipping would make the people who raised you proud.", date: "Jul 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/make-mom-proud", type: "essay" },
+  { title: "Consumerizing Enterprise == Loop Sequencing", summary: "How consumer products sequence engagement loops — and what enterprise products can learn from the way those loops are built.", date: "Jun 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/consumerizing-enterprise-loop-sequencing", type: "essay" },
+  { title: "Product Delight: Brain Rewiring", summary: "What product delight actually is at a neurological level — and how to design for the moments that rewire user behavior.", date: "Jan 2021", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/product-delight-brain-rewiring", type: "essay" },
+  { title: "It's the Silence that Suffocates", summary: "On the communication failures that quietly kill product teams — why the thing nobody says is usually the most important thing.", date: "Jun 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/its-the-silence-that-suffocates", type: "essay" },
+  { title: "Pitch Your PoV", summary: "Why PMs need to develop and defend a point of view — and the techniques for pitching it without getting it dismissed.", date: "May 2020", topics: ["career"], url: "https://runthebusiness.substack.com/p/pitch-your-pov", type: "essay" },
+  { title: "Self-Fulfilling Story-Telling & PM Protagonists", summary: "How the stories PMs tell about their products shape the outcomes — and why the narrative matters as much as the roadmap.", date: "May 2020", topics: ["writing", "career"], url: "https://runthebusiness.substack.com/p/self-fulfilling-story-telling-and", type: "essay" },
+  { title: "Much TODO About Nothing", summary: "Why PM to-do lists are often a form of productive procrastination — and how to audit your task list for actual impact.", date: "May 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/much-todo-about-nothing", type: "essay" },
+  { title: "Team Brand vs Identity", summary: "The difference between how a team is perceived externally and who they actually are — and why both need to be managed intentionally.", date: "May 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/team-brand-vs-identity", type: "essay" },
+  { title: "The Product Lexicon (v1)", summary: "The original shared vocabulary for product teams — the terms that create alignment and the ones that quietly create confusion.", date: "May 2020", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-product-lexicon", type: "essay" },
+  { title: "Savior Syndrome", summary: "The trap of the PM who thinks they\'re the only one who can fix things — and why it makes the whole team worse.", date: "Apr 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/savior-syndrome", type: "essay" },
+  { title: "PMs: Purists && Tweeners", summary: "The two archetypes of product manager — the purist who stays in their lane and the tweener who operates across all of them.", date: "Apr 2020", topics: ["career"], url: "https://runthebusiness.substack.com/p/pms-purists-and-and-tweeners", type: "essay" },
+  { title: "Every Decision Ever", summary: "A framework for categorizing decisions — how to know which ones deserve deep analysis and which ones just need to be made.", date: "May 2020", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/every-decision-ever", type: "essay" },
+  { title: "CXBR: The Other Amazon Bar Raiser", summary: "Amazon\'s customer experience bar raiser process — how it works and what other companies can learn from it.", date: "May 2020", topics: ["career", "b2b-strategy"], url: "https://runthebusiness.substack.com/p/cxbr-the-other-amazon-bar-raiser", type: "essay" },
+  { title: "Run the Business", summary: "The founding essay — what it means to run the business as a product leader, and why it\'s the job most PMs forget they have.", date: "Apr 2020", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/coming-soon", type: "essay" },
+  { title: "Before the Metric Goes South", summary: "How to read the early warning signs that a key metric is heading in the wrong direction — before it becomes a crisis.", summary: "How to read the early warning signs that a key metric is heading in the wrong direction — before it shows up as a crisis.", date: "Mar 2026", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/before-the-metric-goes-south", type: "audio" },
+  { title: "How AI Agents Will Affect TCO in B2B", summary: "How AI agents change the total cost of ownership calculation in B2B — and what that means for product strategy and pricing.", date: "Mar 2025", topics: ["b2b-strategy", "ai"], url: "https://runthebusiness.substack.com/p/how-ai-agents-will-affect-tco-in", type: "audio" },
+  { title: "From Hype to Help: The 10 Most Common Mistakes That Sink Product Launches", summary: "A deep dive into the ten most reliable ways product launches fail — and the practices that actually make them land.", date: "Jan 2025", topics: ["leadership", "product-dev"], url: "https://runthebusiness.substack.com/p/from-hype-to-help-the-10-most-common", type: "video" },
+  { title: "How AI Is Redefining Growth Strategies", summary: "Neha Mittal on how AI is reshaping B2B growth playbooks — from acquisition to expansion to retention.", date: "Jan 2025", topics: ["ai"], url: "https://runthebusiness.substack.com/p/how-ai-is-redefining-growth-strategies", type: "video" },
+  { title: "The Evolution of PM Learning", summary: "How the way PMs learn has changed — from books and bootcamps to communities and in-context feedback loops.", date: "Dec 2024", topics: ["career"], url: "https://runthebusiness.substack.com/p/the-evolution-of-pm-learning", type: "audio" },
+  { title: "Sacred Workflows", summary: "The workflows that teams treat as untouchable — and why examining your sacred cows is the first step to real improvement.", date: "Nov 2024", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/sacred-workflows", type: "audio" },
+  { title: "Overcoming Innovation Inertia", summary: "Carlos Gonzalez de Villaumbrosia on the organizational gravity that keeps established companies from building zero-to-one products.", date: "Dec 2024", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/overcoming-innovation-inertia", type: "video" },
+  { title: "The Agent Development Life Cycle", summary: "A framework for how AI agents evolve from prototype to production — and what\'s different about building for agents vs. users.", date: "Nov 2024", topics: ["ai", "product-dev"], url: "https://runthebusiness.substack.com/p/the-agent-development-life-cycle", type: "video" },
+  { title: "Creating an Innovation Culture", summary: "Aaron Smith on how to tap 100% of your company\'s brain — and why innovation culture is a system, not a mandate.", summary: "Aaron Smith on how to tap 100% of your company's brain — and why innovation culture is a system, not a mandate.", date: "Sep 2024", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/creating-an-innovation-culture", type: "video" },
+  { title: "Why You'll Always End Up Building a Workflow Engine in B2B", summary: "The gravitational pull toward workflow in enterprise software — why every B2B product eventually becomes a workflow tool.", date: "Sep 2024", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/why-youll-always-end-up-building", type: "video" },
+  { title: "Mapping & Measuring Critical User Journeys", summary: "Jon Harmer on the Google framework for identifying and measuring the most important paths users take through your product.", date: "Nov 2024", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/mapping-and-measuring-critical-user", type: "video" },
+  { title: "The Executive Mindset", summary: "The shift in perspective required to lead at the executive level — from solving problems yourself to owning outcomes through others.", date: "Aug 2024", topics: ["career"], url: "https://runthebusiness.substack.com/p/the-executive-mindset", type: "video" },
+  { title: "When the Users Were Right All Along", summary: "Andrew Stadlen on the humbling pattern of ignoring user feedback, building the wrong thing, then discovering they told you all along.", date: "Aug 2024", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/when-the-users-were-right-all-along", type: "video" },
+  { title: "PLG as You Move Up/Down Market", summary: "Shahzad Shaikh on how product-led growth strategies need to evolve as you move between market segments.", date: "Jul 2024", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/plg-as-you-move-updown-market", type: "video" },
+  { title: "Like a Bullet Hitting JELL-O", summary: "Jack Hirsch and Joel Bailon on why good products don\'t automatically sell — and how to get GTM motions to actually stick in enterprise.", date: "Jun 2024", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/like-a-bullet-hitting-jello", type: "video" },
+  { title: "The Convergence of Hardware & Software PMs for Connected Devices", summary: "Liz Fireman on what happens when hardware and software PM have to work together — and who needs to learn what.", date: "Jun 2024", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-convergence-of-hardware-and-software-7e5", type: "video" },
+  { title: "Connecting B2B Products to Revenue (Video)", summary: "An AMA on connecting product work to revenue outcomes — the live version of the metric ladder framework.", date: "May 2024", topics: ["b2b-strategy", "product-dev"], url: "https://runthebusiness.substack.com/p/connecting-b2b-products-to-revenue-af9", type: "video" },
+  { title: "B2B Telephone", summary: "The game of telephone that happens between customer feedback and product decisions in B2B — and how to shorten the chain.", date: "Mar 2023", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/b2b-telephone", type: "audio" },
+  { title: "Promo Playbook", summary: "The PM\'s guide to getting promoted — what actually matters versus what most people spend their energy on.", date: "Mar 2023", topics: ["career"], url: "https://runthebusiness.substack.com/p/promo-playbook", type: "audio" },
+  { title: "The Layers of Customer Centricity (v1)", summary: "The original take on customer centricity as a layered discipline — from listening to internalizing to institutionalizing.", date: "Feb 2023", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-layers-of-customer-centricity", type: "audio" },
+  { title: "Product Intuition vs Conviction", summary: "The difference between a PM\'s gut feel and a PM\'s conviction — and why conviction is what you need to actually ship.", date: "Nov 2022", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/product-intuition-vs-conviction", type: "audio" },
+  { title: "Cultivating a Revenue Mindset for B2B PMs", summary: "How to build the commercial fluency that most PM training ignores — and why revenue mindset is a PM superpower.", date: "Sep 2022", topics: ["b2b-strategy", "career"], url: "https://runthebusiness.substack.com/p/cultivating-a-revenue-mindset-for", type: "audio" },
+  { title: "Gathering GTM Gossip", summary: "The informal intelligence you need from sales and marketing — and how to build the relationships that surface it.", date: "Jul 2022", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/gathering-gtm-gossip", type: "audio" },
+  { title: "Core Product Persistence", summary: "Why core product quality is the thing most teams let slip first — and the case for protecting it at all costs.", date: "Jul 2022", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/core-product-persistence", type: "audio" },
+  { title: "Launches vs Landings", summary: "The difference between launching a feature and making it land — why the work after the launch is where the value actually lives.", date: "Jun 2022", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/launches-vs-landings", type: "audio" },
+  { title: "The 5 C's of Why We Cascade", summary: "The five organizational reasons strategy cascades fail — and what to fix at each level to make alignment stick.", date: "Jul 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/the-5-cs-of-why-we-cascade", type: "audio" },
+  { title: "BHAG Thinking", summary: "How to use Big Hairy Audacious Goals without losing your operational footing — the balance between ambition and execution.", date: "Jun 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/bhag-thinking", type: "audio" },
+  { title: "Marketplace Bootstrapping", summary: "The chicken-and-egg problem of marketplace products — the strategies that actually work to get both sides moving.", date: "Jun 2021", topics: ["b2b-strategy", "platform"], url: "https://runthebusiness.substack.com/p/marketplace-bootstrapping", type: "audio" },
+  { title: "Platform Plays", summary: "When and how to make the platform move — the timing, the signals, and the traps to avoid.", date: "May 2021", topics: ["platform"], url: "https://runthebusiness.substack.com/p/platform-plays", type: "audio" },
+  { title: "Honing Product Judgement", summary: "The deliberate practices that sharpen PM judgment over time — and why it\'s a skill you build, not a trait you\'re born with.", date: "May 2021", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/honing-product-judgement", type: "audio" },
+  { title: "The Product Paradox", summary: "The fundamental tension in product management — and why the best PMs learn to hold contradictory truths at once.", date: "May 2021", topics: ["product-dev"], url: "https://runthebusiness.substack.com/p/the-product-paradox", type: "audio" },
+  { title: "For Whom the Pendulum Swings", summary: "The cycles in product strategy — centralization vs. decentralization, build vs. buy — and who wins when the pendulum swings.", date: "Apr 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/for-whom-the-pendulum-swings", type: "audio" },
+  { title: "Strategy Sophistication", summary: "The difference between sophisticated strategy and strategy theater — and how to level up your strategic thinking.", date: "Apr 2021", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/strategy-sophistication", type: "audio" },
+  { title: "Quarterly Planning Tips", summary: "The practices that make quarterly planning actually useful — and the ones that just create the appearance of alignment.", date: "Apr 2021", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/quarterly-planning-tips", type: "audio" },
+  { title: "Dear Workaholic (Note to Self)", summary: "An honest reckoning with hustle culture in product — and a note to anyone who\'s mistaken being busy for being effective.", date: "Mar 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/dear-workaholic-note-to-self", type: "audio" },
+  { title: "Personal North Star Metrics", summary: "How to apply the north star metric concept to your own career — what to measure and why it changes at each stage.", date: "Mar 2021", topics: ["metrics"], url: "https://runthebusiness.substack.com/p/personal-north-star-metrics", type: "audio" },
+  { title: "PM Collaboration vs Competition", summary: "When PMs should collaborate and when they\'re actually competing — and how to navigate the organizational dynamics.", date: "Mar 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/pm-collaboration-vs-competition", type: "audio" },
+  { title: "PM Onboarding Practices", summary: "The first 90 days in a new PM role — the practices that accelerate ramp and the mistakes that slow it down.", date: "Feb 2021", topics: ["career", "product-dev"], url: "https://runthebusiness.substack.com/p/pm-onboarding-practices", type: "audio" },
+  { title: "Conway's Conundrum", summary: "How organizational structure shapes product architecture — and why Conway\'s Law is both a constraint and a design tool.", date: "Feb 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/conways-conundrum", type: "audio" },
+  { title: "New Toolkit, Old Mindset", summary: "The trap of adopting new tools without updating the mental model underneath — why new methods require new thinking.", date: "Feb 2021", topics: ["career"], url: "https://runthebusiness.substack.com/p/new-toolkit-old-mindset", type: "audio" },
+  { title: "Functional Fluidity", summary: "The ability to move fluidly across functions — why the best PMs can think like engineers, designers, and sellers when needed.", date: "Feb 2021", topics: ["b2b-strategy"], url: "https://runthebusiness.substack.com/p/functional-fluidity", type: "audio" },
+  { title: "Culture Curation", summary: "How product leaders intentionally shape team culture — the active work of curation versus the passive result of neglect.", date: "Jan 2021", topics: ["leadership"], url: "https://runthebusiness.substack.com/p/culture-curation", type: "audio" }
+];
+
+// === LEMONAID DATA ===
+// === LEMONAID SEARCH ===
+// Problem phrase → keyword mappings for intent detection
+const problemMap = [
+  { phrases: ['promot','career','stuck','plateau','ceiling','level up','senior','principal','not getting'], boost: ['career','asymptote','ladder','promo','playbook','unimpact','imposter','ic prime','path'] },
+  { phrases: ['metric','measure','okr','kpi','north star','south star','vanity','gaming','dashboard'], boost: ['metric','south star','okr','measure','currency','malfunction','scorecards','attribution'] },
+  { phrases: ['ship','launch','feature factory','impact','outcome','nothing to show','busy','ticket'], boost: ['feature factory','launch','landing','unimpact','andon','flop','todo'] },
+  { phrases: ['strateg','roadmap','priorit','align','focus','direction','where to play'], boost: ['strateg','eigenquestion','bet','illuminate','implement','spiral','sophisticat','discern'] },
+  { phrases: ['platform','api','infrastructure','bundle','integrat'], boost: ['platform','platformify','demystif','plays','myth'] },
+  { phrases: ['revenue','pricing','monetiz','sales','gtm','growth','commercial','business model'], boost: ['revenue','pricing','daily decisions','manufacturing currency','manufacturing champions','b2b telephone','gtm gossip'] },
+  { phrases: ['customer','user','feedback','research','discovery','validat','insight','interview'], boost: ['customer','centricity','validat','discovery','synthesiz','customer zero','hunch','buried treasure'] },
+  { phrases: ['ai','agent','llm','machine learning','automat','copilot'], boost: ['ai','agent','tco','interface','hype','redefining','layering'] },
+  { phrases: ['team','culture','hire','hiring','manage','lead','leader','execut','report'], boost: ['team','culture','leadership','executive','disoriented','scarf','cargo','curating','brand','ineffective'] },
+  { phrases: ['writ','communicat','document','present','stakeholder','pitch','influence','silence'], boost: ['writing','pitch','silence','story','communicat'] },
+  { phrases: ['onboard','new pm','transition','first 90','ramp','start','join'], boost: ['onboard','transition','new pm','artifacts','path'] },
+  { phrases: ['platform','enterprise','upmarket','b2b','saas','complex sale'], boost: ['enterprise','upmarket','truisms','b2b','consumerization','skip step','telephone'] },
+  { phrases: ['innovat','zero to one','moonshot','experiment','new product'], boost: ['innovat','moonshot','inertia','anti-moonshot','types of product','new product'] },
+];
+
+// === ROUTING ===
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+
+  // Update nav active state
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const navMap = { newsletter: 'nav-newsletter', concepts: 'nav-concepts', series: 'nav-series', guides: 'nav-guides', hiring: 'nav-hiring', skills: 'nav-skills', principles: 'nav-principles', about: 'nav-about' };
+  // Check if the page starts with a nav section
+  for (const [key, id] of Object.entries(navMap)) {
+    if (page === key || page.startsWith(key + '-') || page.startsWith('path-') && key === 'series' || page.startsWith('guide-') && key === 'guides') {
+      const navEl = document.getElementById(id);
+      if (navEl) navEl.classList.add('active');
+    }
+  }
+
+  window.scrollTo(0, 0);
+  window.location.hash = page;
+}
+
+// Handle hash on load
+window.addEventListener('load', () => {
+  const hash = window.location.hash.slice(1);
+  if (hash) go(hash); else renderExplorePosts('all');
+  renderExplorePosts('all');
+});
+
+// === EXPLORE FILTERING ===
+const topicLabels = {
+  'b2b-strategy': 'B2B Strategy',
+  'product-dev': 'Product Development',
+  'leadership': 'Leadership & Teams',
+  'career': 'PM Career & Growth',
+  'metrics': 'Metrics & OKRs',
+  'ai': 'AI & Automation',
+  'pricing': 'Pricing & Revenue',
+  'platform': 'Platform',
+  'writing': 'Writing'
+};
+const topicOrder = ['b2b-strategy', 'product-dev', 'leadership', 'career', 'metrics', 'ai', 'pricing', 'platform', 'writing'];
+
+function filterTopic(topic, el) {
+  document.querySelectorAll('.topic-pill').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderExplorePosts(topic);
+}
+
+// Navigate to Library with topic filter
+const topicKeyMap = {
+  'Metrics & OKRs': 'metrics',
+  'Pricing & Revenue': 'pricing',
+  'Product Development': 'product-dev',
+  'Leadership & Teams': 'leadership',
+  'PM Career & Growth': 'career',
+  'AI & Automation': 'ai',
+  'B2B Strategy': 'b2b-strategy',
+  'Platform': 'platform',
+  'Writing': 'writing'
+};
+
+function goToLibraryWithTopic(displayName) {
+  const topicKey = topicKeyMap[displayName];
+  if (topicKey) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const newsPage = document.getElementById('page-newsletter');
+    if (newsPage) {
+      newsPage.classList.add('active');
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        // Find the matching pill element
+        const pills = document.querySelectorAll('.topic-pill');
+        let matchingPill = null;
+        for (let pill of pills) {
+          if (pill.textContent.trim() === displayName) {
+            matchingPill = pill;
+            break;
+          }
+        }
+        if (!matchingPill) {
+          // Fallback: find by topic key in onclick
+          for (let pill of pills) {
+            if (pill.getAttribute('onclick') && pill.getAttribute('onclick').includes(`filterTopic('${topicKey}'`)) {
+              matchingPill = pill;
+              break;
+            }
+          }
+        }
+        filterTopic(topicKey, matchingPill);
+      }, 50);
+    }
+  }
+}
+
+function renderExplorePosts(topic) {
+  const container = document.getElementById('explore-posts');
+  const icon = t => t === 'audio' ? '🎙' : t === 'video' ? '🎬' : '✍️';
+  const postItem = p => `<a class="post-item" href="${p.url}" target="_blank">
+    <span class="post-body">
+      <span class="post-icon">${icon(p.type)}</span>
+      <span class="post-title">${p.title}</span>
+    </span>
+    <span class="post-summary">${p.summary || ''}</span>
+  </a>`;
+
+  if (topic === 'all') {
+    // Group by primary topic (first in each post's topics array)
+    const groups = {};
+    topicOrder.forEach(t => groups[t] = []);
+    posts.forEach(p => {
+      const primary = p.topics[0];
+      if (groups[primary]) groups[primary].push(p);
+    });
+    container.innerHTML = topicOrder
+      .filter(t => groups[t].length > 0)
+      .map(t => `
+        <div class="post-group" id="group-${t}">
+          <div class="post-group-header">
+            <span class="post-group-label">${topicLabels[t]}</span>
+            <span class="post-group-count">${groups[t].length} posts</span>
+          </div>
+          <div class="post-list">${groups[t].map(postItem).join('')}</div>
+        </div>
+      `).join('');
+  } else {
+    // Flat filtered list for specific topic
+    const filtered = posts.filter(p => p.topics.includes(topic));
+    container.innerHTML = `<div class="post-list" style="margin-top:24px;">${filtered.map(postItem).join('')}</div>`;
+  }
+}
+
+// === LEMONAID ===
+function searchLemonaid() {
+  const rawInput = document.getElementById('lemonaid-input').value;
+  const input = rawInput.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+  const results = document.getElementById('lemonaid-results');
+  if (input.trim().length < 3) { results.innerHTML = ''; return; }
+
+  const stopWords = new Set(['the','a','an','is','are','my','our','we','i','to','and','or','but','in','on','at','for','with','how','what','why','when','do','does','can','its','not','no','be','have','has','that','this','it','of','from','about','get','got','lot','too','also','very','just','more','some','any','all','team','teams']);
+  const words = input.split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+
+  const icon = t => t === 'audio' ? '🎙' : t === 'video' ? '🎬' : '✍️';
+
+  // Score each post
+  const scored = posts.map(post => {
+    let score = 0;
+    const title = post.title.toLowerCase();
+    const summary = (post.summary || '').toLowerCase();
+    const topics = post.topics.join(' ');
+
+    // Direct word matches
+    for (const word of words) {
+      if (title.includes(word)) score += 5;
+      if (summary.includes(word)) score += 2;
+      if (topics.includes(word)) score += 2;
+    }
+
+    // Intent-based boosting
+    for (const mapping of problemMap) {
+      const intentMatch = mapping.phrases.some(p => input.includes(p));
+      if (intentMatch) {
+        for (const boost of mapping.boost) {
+          if (title.includes(boost)) score += 4;
+          if (summary.includes(boost)) score += 2;
+          if (topics.includes(boost)) score += 1;
+        }
+      }
+    }
+
+    return { post, score };
+  });
+
+  const top = scored.filter(s => s.score > 0).sort((a, b) => b.score - a.score).slice(0, 4);
+
+  if (top.length === 0) {
+    results.innerHTML = '<p class="lemonaid-empty">No matches found — try rephrasing or describing a specific challenge.</p>';
+    return;
+  }
+
+  results.innerHTML = top.map(({ post: p }) => `
+    <a class="lemonaid-match" href="${p.url}" target="_blank">
+      <div class="lemonaid-match-header">
+        <span class="lemonaid-match-icon">${icon(p.type)}</span>
+        <h3>${p.title}</h3>
+      </div>
+      <p>${p.summary || ''}</p>
+    </a>
+  `).join('');
+}
+
+// Init
+renderExplorePosts('all');
+</script>
+
+</body>
+</html>
